@@ -11,6 +11,7 @@ const log = (...a) => console.log('•', ...a);
   async function sessao(email) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 860 } });
     const page = await ctx.newPage();
+  page.setDefaultTimeout(15000);
     page.on('pageerror', (e) => problemas.push(e.message));
     page.on('response', (r) => r.status() >= 500 && problemas.push(`HTTP ${r.status()} ${r.url()}`));
     await page.goto(BASE + '/login');
@@ -36,6 +37,19 @@ const log = (...a) => console.log('•', ...a);
   log('professor cadastrou; status na tela:', (await prof.getByText('Status:').textContent()).trim());
   const qid = prof.url().split('/').pop();
   await prof.screenshot({ path: path.join(SHOTS, '30_prof_questao_pendente.png'), fullPage: true });
+
+  // Professor comenta questão de outro autor (RF024)
+  await prof.goto(BASE + '/questoes?busca=HTTPS'); await prof.getByRole('link', { name: 'Visualizar' }).first().click();
+  await prof.getByText('Gabarito comentado').waitFor();
+  const antes = await prof.locator('.comentario').count();
+  await prof.getByLabel('Comentário').fill('Dica do professor: HTTPS é HTTP sobre TLS (teste E2E).');
+  await prof.getByRole('button', { name: 'Publicar comentário' }).click(); await prof.getByText('Comentário adicionado.').waitFor();
+  await prof.waitForTimeout(300);
+  log('professor comentou questão de outro autor:', (await prof.locator('.comentario').count()) === antes + 1 ? 'OK' : 'FALHOU');
+  // Menu da conta fecha ao clicar fora
+  await prof.getByRole('button', { name: /Menu da conta/ }).click(); await prof.locator('.dropdown-menu.show').waitFor();
+  await prof.mouse.click(10, 400); await prof.waitForTimeout(150);
+  log('menu da conta fecha ao clicar fora:', (await prof.locator('.dropdown-menu.show').count()) === 0 ? 'OK' : 'FALHOU');
 
   // Aluno não vê a pendente
   const aluno = await sessao('aluno@enahub.demo');
@@ -63,6 +77,15 @@ const log = (...a) => console.log('•', ...a);
   await admin.screenshot({ path: path.join(SHOTS, '32_admin_denuncias.png'), fullPage: true });
   await admin.getByRole('button', { name: 'Improcedente' }).first().click(); await admin.getByText('Denúncia arquivada.').waitFor();
   log('denúncia enviada pelo aluno e analisada pelo admin: OK');
+
+  // Categorias (cursos e temas)
+  await admin.goto(BASE + '/admin?aba=categorias'); await admin.getByRole('heading', { name: 'Temas / áreas' }).waitFor();
+  await admin.getByLabel('Nome do novo tema').fill(`Tema E2E ${Date.now() % 100000}`);
+  await admin.getByLabel('Curso do tema').selectOption({ label: 'Direito' });
+  await admin.locator('form', { has: admin.getByLabel('Nome do novo tema') }).getByRole('button', { name: 'Adicionar' }).click();
+  await admin.getByText('Categoria cadastrada.').waitFor();
+  await admin.screenshot({ path: path.join(SHOTS, '34_admin_categorias.png'), fullPage: true });
+  log('admin cadastrou tema em Categorias: OK');
 
   // Simulado oficial e mobile do simulado
   await aluno.setViewportSize({ width: 390, height: 844 });

@@ -24,6 +24,7 @@ function varBanco(nome) {
   const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 860 }, locale: 'pt-BR' });
   const page = await ctx.newPage();
+  page.setDefaultTimeout(15000);
   const problemas = [];
   page.on('console', (m) => m.type() === 'error' && problemas.push('console: ' + m.text()));
   page.on('pageerror', (e) => problemas.push('pageerror: ' + e.message));
@@ -44,6 +45,12 @@ function varBanco(nome) {
   await page.locator('#aceite').check();
   await page.getByRole('button', { name: 'Cadastrar' }).click();
   await page.getByRole('heading', { name: /Olá, Estudante/ }).waitFor(); await page.waitForTimeout(500); await foto('03_inicio');
+  const stats = async () => (await page.locator('.valor-stat').allTextContents()).map((t) => t.trim()).join(' | ');
+  log('saudação:', (await page.getByRole('heading', { name: /Olá/ }).textContent()).trim(), '| indicadores sem histórico:', await stats());
+  // Cards acessíveis pelo teclado: Tab até "Banco de Questões" e Enter
+  await page.locator('a.cartao-atalho').first().focus(); await page.keyboard.press('Tab'); await page.keyboard.press('Enter');
+  await page.waitForURL('**/questoes'); log('card acionado pelo teclado →', page.url().replace(BASE, ''));
+  await page.goBack(); await page.getByRole('heading', { name: /Olá/ }).waitFor();
   log('cadastro OK; usuário no banco:', sql(`SELECT CONCAT(perfil,' / ',LEFT(senha,7)) FROM usuarios WHERE email='${email}'`));
 
   // 2. Banco de questões: filtros, busca, visualização, prática, favorito
@@ -104,6 +111,11 @@ function varBanco(nome) {
   await foto('11_gabarito');
   await page.goto(BASE + `/simulados/${simId}`); await page.waitForURL(`**/simulados/${simId}/resultado`);
   log('abrir simulado finalizado redireciona ao resultado: OK');
+  await page.getByRole('link', { name: 'Início' }).click(); await page.getByText(/ver resultado/).waitFor();
+  log('Início após o simulado:', await stats());
+  log('conferência no banco: % último =', sql(`SELECT ROUND(percentual) FROM simulados WHERE id=${simId}`),
+    '| questões distintas respondidas =', sql(`SELECT COUNT(DISTINCT r.questao_id) FROM respostas r JOIN simulados s ON s.id=r.simulado_id JOIN usuarios u ON u.id=s.usuario_id WHERE u.email='${email}'`));
+  await foto('11b_inicio_apos_simulado');
 
   // 4. Finalização automática por tempo no navegador
   await page.goto(BASE + '/simulados');
@@ -149,7 +161,7 @@ function varBanco(nome) {
   await page.goto(BASE + `/simulados/${simId}/resultado`); await page.getByRole('heading', { name: 'Resultado do Simulado' }).waitFor(); await foto('19_mobile_resultado');
   const larguraExtra = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   log('rolagem horizontal no celular (px):', larguraExtra);
-  await page.getByRole('button', { name: 'Abrir menu' }).click(); await page.getByRole('button', { name: /^E/ }).last().click();
+  await page.getByRole('button', { name: 'Abrir menu' }).click(); await page.getByRole('button', { name: /Menu da conta/ }).click();
   await page.getByRole('button', { name: 'Sair' }).click(); await page.waitForURL('**/login');
   await page.goto(BASE + '/desempenho'); await page.waitForURL('**/login');
   log('logout OK; /desempenho sem login redireciona para', page.url().replace(BASE, ''));
