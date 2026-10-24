@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth, useToast } from '../contexts/contextos'
 import { PERFIS } from '../utils/formatar'
@@ -17,6 +17,20 @@ export default function Navbar() {
   const navegar = useNavigate()
   const [menuAberto, setMenuAberto] = useState(false)
   const [contaAberta, setContaAberta] = useState(false)
+  const menuConta = useRef(null)
+
+  // Fecha o menu da conta ao clicar fora dele ou pressionar Esc
+  useEffect(() => {
+    if (!contaAberta) return undefined
+    const clique = (e) => { if (!menuConta.current?.contains(e.target)) setContaAberta(false) }
+    const tecla = (e) => { if (e.key === 'Escape') setContaAberta(false) }
+    document.addEventListener('mousedown', clique)
+    document.addEventListener('keydown', tecla)
+    return () => {
+      document.removeEventListener('mousedown', clique)
+      document.removeEventListener('keydown', tecla)
+    }
+  }, [contaAberta])
 
   const fechar = () => {
     setMenuAberto(false)
@@ -59,11 +73,12 @@ export default function Navbar() {
                 </NavLink>
               </li>
             ))}
-            <li className="nav-item dropdown ms-lg-3">
+            <li className="nav-item dropdown ms-lg-3" ref={menuConta}>
               <button
                 type="button"
                 className="nav-link dropdown-toggle btn btn-link"
                 aria-expanded={contaAberta}
+                aria-label={`Menu da conta de ${usuario.nome}`}
                 onClick={() => setContaAberta((v) => !v)}
               >
                 <span className="avatar" aria-hidden="true">{usuario.nome.charAt(0).toUpperCase()}</span>

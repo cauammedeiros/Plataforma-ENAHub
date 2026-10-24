@@ -125,7 +125,7 @@ a {
   justify-content: center;
   border-radius: 0.75rem;
   background: var(--enahub-fundo);
-  font-size: 1.35rem;
+  color: var(--enahub-grafite);
 }
 
 .rotulo-stat {

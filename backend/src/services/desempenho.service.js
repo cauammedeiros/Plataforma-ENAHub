@@ -44,9 +44,13 @@ async function resumo(usuarioId) {
           ORDER BY data_fim DESC, id DESC LIMIT 20`,
         [usuarioId]
     );
+    // Questões DIFERENTES já respondidas em simulados (repetições não contam),
+    // considerando só as publicadas, para o numerador nunca passar do total
     const [[respondidas]] = await db.query(
         `SELECT COUNT(DISTINCT r.questao_id) AS total
-           FROM respostas r JOIN simulados s ON s.id = r.simulado_id
+           FROM respostas r
+           JOIN simulados s ON s.id = r.simulado_id
+           JOIN questoes q ON q.id = r.questao_id AND q.status = 'aprovada'
           WHERE s.usuario_id = ?`,
         [usuarioId]
     );
