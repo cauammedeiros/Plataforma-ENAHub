@@ -5,7 +5,8 @@ Base: `http://localhost:3000/api` (no front-end em desenvolvimento, o Vite encam
 - Corpo das requisições e respostas em JSON.
 - Autenticação: `Authorization: Bearer <token>`. O token é recebido no cadastro ou no login e vale por 7 dias. O banco guarda apenas o hash SHA-256 do token. O logout apaga a sessão.
 - Formato dos erros: `{ "mensagem": "texto para o usuário", "erros": { "campo": "detalhe" } }`.
-- Códigos usados: `400` (dados inválidos), `401` (não autenticado), `403` (sem permissão ou conta bloqueada), `404`, `409` (conflito, por exemplo simulado já finalizado ou e-mail duplicado), `422` (não há questões suficientes), `429` (excesso de tentativas de login).
+- Códigos usados: `400` (dados inválidos), `401` (não autenticado), `403` (sem permissão ou conta bloqueada), `404`, `409` (conflito, por exemplo simulado já finalizado ou e-mail duplicado), `422` (não há questões suficientes), `429` (excesso de tentativas).
+- Limite de tentativas: `cadastro`, `login` e `redefinir-senha` aceitam até 10 respostas com erro por IP + e-mail a cada 15 min (logins bem-sucedidos não contam). `esqueci-senha` aceita até 5 pedidos por IP + e-mail a cada 15 min.
 
 Perfis: **aluno**, **professor** e **admin**. Na tabela, 🔓 = rota pública, 👤 = qualquer usuário logado, 🎓 = professor ou admin, 🛡 = somente admin.
 
@@ -17,7 +18,7 @@ Perfis: **aluno**, **professor** e **admin**. Na tabela, 🔓 = rota pública, �
 | POST | `/auth/login` | 🔓 | `{email, senha}` → `{usuario, token, expiraEm}` |
 | POST | `/auth/logout` | 👤 | Invalida o token atual |
 | GET | `/auth/me` | 👤 | Dados do usuário logado |
-| POST | `/auth/esqueci-senha` | 🔓 | `{email}`. Gera um link válido por 30 minutos. Como não há servidor de e-mail, o link é registrado no console do back-end (e devolvido em `link_desenvolvimento` quando `NODE_ENV=development`) |
+| POST | `/auth/esqueci-senha` | 🔓 | `{email}`. Sempre responde com a mesma mensagem (não revela se o e-mail existe). Gera um link válido por 30 minutos e invalida os links anteriores. Sem servidor de e-mail, o link é registrado no console do back-end; ele só volta em `link_desenvolvimento` se `RECUPERACAO_LINK_NA_RESPOSTA=true` **e** `NODE_ENV=development` (uso exclusivo em demonstração local) |
 | POST | `/auth/redefinir-senha` | 🔓 | `{token, nova_senha}`. O link é de uso único e encerra todas as sessões |
 
 Regra de senha: de 8 a 72 caracteres, com letras e números. A senha é armazenada com hash `scrypt` e salt aleatório.
@@ -37,8 +38,8 @@ Regra de senha: de 8 a 72 caracteres, com letras e números. A senha é armazena
 | GET | `/instituicoes` | 🔓 | Lista de instituições |
 | GET | `/temas?curso_id=` | 🔓 | Temas (áreas) do curso |
 | GET | `/anos` | 🔓 | Anos com questões publicadas |
-| POST | `/cursos` | 🛡 | `{nome}` |
-| POST | `/temas` | 🎓 | `{nome, curso_id?}` |
+| POST | `/cursos` | 🛡 | `{nome}`. Retorna 409 se já existir (sem diferenciar maiúsculas e acentos) |
+| POST | `/temas` | 🎓 | `{nome, curso_id?}`. Retorna 409 se já existir no mesmo curso |
 
 ## Questões (RF006–RF012, RF024, RF025, RF031)
 
@@ -46,14 +47,14 @@ Regra de senha: de 8 a 72 caracteres, com letras e números. A senha é armazena
 |---|---|---|---|
 | GET | `/questoes` | 👤 | Filtros: `busca, curso_id, ano, tema_id, dificuldade (facil/media/dificil), favoritas=true, minhas=true, status (gestores), pagina, limite (até 50)`. O aluno vê apenas questões aprovadas |
 | GET | `/questoes/favoritas` | 👤 | Questões favoritas do usuário |
-| GET | `/questoes/:id` | 👤 | Questão com as alternativas. **A alternativa correta e os comentários só são enviados a quem pode editar a questão** |
+| GET | `/questoes/:id` | 👤 | Questão com as alternativas, `pode_editar` e `pode_comentar`. **A alternativa correta e os comentários só são enviados a professores e administradores** |
 | POST | `/questoes/:id/responder` | 👤 | Modo prática: `{alternativa_id}` → `{acertou, letra_correta, comentarios}`. Fica bloqueado (409) se a questão estiver no simulado em andamento do aluno |
 | POST/DELETE | `/questoes/:id/favorito` | 👤 | Favoritar e desfavoritar |
 | POST | `/questoes` | 🎓 | `{enunciado, ano?, dificuldade, curso_id, tema_id?, fonte?, oficial_enade?, alternativas: [{texto} ×5], correta: "A".."E"}`. Questão criada por professor fica **pendente**; criada por admin já é publicada |
 | PUT | `/questoes/:id` | 🎓 | Mesmo corpo. O professor só edita as próprias questões, e a edição volta para aprovação |
 | PATCH | `/questoes/:id/status` | 🛡 | `{status: "aprovada" \| "rejeitada"}` |
 | DELETE | `/questoes/:id` | 🎓 | Exclui a questão. Se ela já foi usada em algum simulado, é **arquivada** para preservar o histórico |
-| GET/POST | `/questoes/:id/comentarios` | 🎓 | Explicações `{texto, imagem_url?, video_url?}` |
+| GET/POST | `/questoes/:id/comentarios` | 🎓 | Explicações `{texto, imagem_url?, video_url?}`, em qualquer questão (RF024). URLs aceitas apenas com http(s) |
 | DELETE | `/questoes/:id/comentarios/:comentarioId` | 🎓 | Remove um comentário (o autor ou o admin) |
 
 ## Simulados (RF013–RF023, RF032)
@@ -71,7 +72,9 @@ Regra de senha: de 8 a 72 caracteres, com letras e números. A senha é armazena
 
 **Cálculo do resultado:** `percentual = acertos / total × 100` e `nota = acertos / total × 10`, ambos com duas casas decimais. "Erros" são as questões respondidas incorretamente e "em branco" são as não respondidas. Exemplo: 30 acertos em 40 questões dão 75% e nota 7,5.
 
-**Tempo:** o prazo (`data_limite`) é definido no servidor ao criar o simulado e nunca pausa. Uma rotina do servidor, executada a cada 30 s, finaliza os simulados vencidos, inclusive quando o navegador está fechado.
+**Tempo:** o prazo (`data_limite`, em segundos inteiros) é definido no servidor ao criar o simulado e nunca pausa. `GET /simulados/:id` devolve `tempo_restante_ms`. Uma rotina do servidor, executada a cada 30 s, finaliza os simulados vencidos, inclusive quando o navegador está fechado.
+
+**Um simulado por vez:** a criação roda numa transação que bloqueia a linha do usuário (`SELECT ... FOR UPDATE`). Requisições simultâneas criam apenas uma tentativa; as demais recebem 409.
 
 ## Desempenho (RF020–RF022)
 
