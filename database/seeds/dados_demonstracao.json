@@ -1,0 +1,282 @@
+{
+  "_aviso": "Dados de DEMONSTRAÇÃO do ENAHub. As questões abaixo foram elaboradas pela equipe para testar a plataforma e NÃO são questões oficiais do ENADE/INEP. O campo 'ano' é apenas um ano de referência para demonstrar o filtro.",
+  "instituicoes": [
+    "Universidade de Fortaleza (UNIFOR)",
+    "Universidade Federal do Ceará (UFC)",
+    "Universidade Estadual do Ceará (UECE)"
+  ],
+  "cursos": {
+    "Análise e Desenvolvimento de Sistemas": [
+      "Algoritmos e Estruturas de Dados",
+      "Banco de Dados",
+      "Engenharia de Software",
+      "Redes de Computadores",
+      "Segurança da Informação",
+      "Programação e Desenvolvimento Web"
+    ],
+    "Administração": [
+      "Marketing",
+      "Estratégia Organizacional",
+      "Finanças e Contabilidade",
+      "Gestão de Pessoas",
+      "Logística e Operações"
+    ],
+    "Direito": [
+      "Direito Constitucional",
+      "Direito Civil",
+      "Direito Penal",
+      "Direito do Consumidor",
+      "Direito do Trabalho"
+    ]
+  },
+  "usuarios": [
+    { "nome": "Administrador Demo", "email": "admin@enahub.demo", "perfil": "admin", "curso": "Análise e Desenvolvimento de Sistemas", "instituicao": "Universidade de Fortaleza (UNIFOR)" },
+    { "nome": "Professora Demo Lima", "email": "professor@enahub.demo", "perfil": "professor", "curso": "Análise e Desenvolvimento de Sistemas", "instituicao": "Universidade de Fortaleza (UNIFOR)" },
+    { "nome": "Aluno Demo Silva", "email": "aluno@enahub.demo", "perfil": "aluno", "curso": "Análise e Desenvolvimento de Sistemas", "instituicao": "Universidade de Fortaleza (UNIFOR)" },
+    { "nome": "Bruna Demo Costa", "email": "bruna@enahub.demo", "perfil": "aluno", "curso": "Análise e Desenvolvimento de Sistemas", "instituicao": "Universidade Federal do Ceará (UFC)" },
+    { "nome": "Rafael Demo Souza", "email": "rafael@enahub.demo", "perfil": "aluno", "curso": "Administração", "instituicao": "Universidade Estadual do Ceará (UECE)" }
+  ],
+  "questoes": [
+    {
+      "codigo": "DEMO-ADS-01", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Banco de Dados", "ano": 2021, "dificuldade": "media",
+      "enunciado": "Uma tabela de pedidos possui chave primária composta (numero_pedido, codigo_produto). Ela já está na 1ª Forma Normal e todos os atributos não chave dependem da chave primária completa, e não apenas de parte dela. Considerando apenas essa informação, é correto afirmar que a tabela está, no mínimo, na:",
+      "alternativas": ["Segunda Forma Normal (2FN).", "Terceira Forma Normal (3FN).", "Forma Normal de Boyce-Codd (FNBC).", "Quarta Forma Normal (4FN).", "Nenhuma forma normal, pois possui chave composta."],
+      "correta": "A",
+      "comentario": "A 2FN exige que a tabela esteja na 1FN e que não haja dependências parciais, ou seja, todo atributo não chave deve depender da chave primária inteira. A 3FN exigiria também a ausência de dependências transitivas, o que o enunciado não garante."
+    },
+    {
+      "codigo": "DEMO-ADS-02", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Banco de Dados", "ano": 2021, "dificuldade": "facil",
+      "enunciado": "Em SQL, deseja-se listar apenas os cursos que possuem mais de 50 alunos matriculados, a partir de uma consulta que agrupa as matrículas por curso com GROUP BY. Qual cláusula deve ser utilizada para filtrar os grupos resultantes?",
+      "alternativas": ["WHERE", "ORDER BY", "HAVING", "DISTINCT", "LIMIT"],
+      "correta": "C",
+      "comentario": "WHERE filtra linhas antes do agrupamento; HAVING filtra os grupos depois do GROUP BY e pode usar funções de agregação, como HAVING COUNT(*) > 50."
+    },
+    {
+      "codigo": "DEMO-ADS-03", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Banco de Dados", "ano": 2022, "dificuldade": "media",
+      "enunciado": "Durante uma transferência bancária, o sistema debita o valor da conta de origem, mas ocorre uma falha antes do crédito na conta de destino. O SGBD desfaz o débito, deixando o banco como estava antes da operação. Essa garantia corresponde a qual propriedade ACID?",
+      "alternativas": ["Consistência", "Isolamento", "Durabilidade", "Atomicidade", "Disponibilidade"],
+      "correta": "D",
+      "comentario": "Atomicidade garante que a transação é executada por inteiro ou não é executada (tudo ou nada). Por isso o débito é desfeito com rollback quando o crédito falha."
+    },
+    {
+      "codigo": "DEMO-ADS-04", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Algoritmos e Estruturas de Dados", "ano": 2019, "dificuldade": "facil",
+      "enunciado": "O recurso \"desfazer\" (Ctrl+Z) de um editor de textos sempre reverte a última ação realizada. Qual estrutura de dados é a mais adequada para armazenar o histórico de ações nesse caso?",
+      "alternativas": ["Fila (FIFO)", "Pilha (LIFO)", "Árvore binária de busca", "Tabela hash", "Grafo direcionado"],
+      "correta": "B",
+      "comentario": "A pilha segue a política LIFO (último a entrar, primeiro a sair): a ação mais recente fica no topo e é a primeira a ser desfeita."
+    },
+    {
+      "codigo": "DEMO-ADS-05", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Algoritmos e Estruturas de Dados", "ano": 2019, "dificuldade": "media",
+      "enunciado": "Considere um vetor com n elementos já ordenados. A complexidade de tempo, no pior caso, da busca binária por um elemento nesse vetor é:",
+      "alternativas": ["O(1)", "O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+      "correta": "E",
+      "comentario": "A cada comparação a busca binária descarta metade do intervalo restante. Após k passos restam n/2^k elementos, logo são necessários cerca de log₂ n passos: O(log n)."
+    },
+    {
+      "codigo": "DEMO-ADS-06", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Algoritmos e Estruturas de Dados", "ano": 2022, "dificuldade": "dificil",
+      "enunciado": "Uma equipe precisa ordenar grandes volumes de dados e exige que o tempo de execução no pior caso seja O(n log n). Entre os algoritmos abaixo, qual atende a esse requisito?",
+      "alternativas": ["Quicksort com pivô sempre no primeiro elemento", "Bubble sort", "Merge sort", "Insertion sort", "Selection sort"],
+      "correta": "C",
+      "comentario": "O merge sort divide o vetor ao meio recursivamente e intercala as metades em tempo linear, resultando em O(n log n) em todos os casos. O quicksort tem pior caso O(n²) (por exemplo, com vetor já ordenado e pivô no primeiro elemento); bubble, insertion e selection sort são O(n²)."
+    },
+    {
+      "codigo": "DEMO-ADS-07", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Engenharia de Software", "ano": 2021, "dificuldade": "facil",
+      "enunciado": "No framework Scrum, qual papel é responsável por maximizar o valor do produto e por ordenar (priorizar) os itens do Product Backlog?",
+      "alternativas": ["Product Owner", "Scrum Master", "Desenvolvedores (Developers)", "Gerente de projetos", "Cliente final"],
+      "correta": "A",
+      "comentario": "Segundo o Guia do Scrum, o Product Owner é responsável por maximizar o valor do produto e por gerenciar o Product Backlog, incluindo a ordenação de seus itens."
+    },
+    {
+      "codigo": "DEMO-ADS-08", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Engenharia de Software", "ano": 2022, "dificuldade": "media",
+      "enunciado": "Um desenvolvedor escreveu um teste automatizado que verifica, de forma isolada, se a função calcularNota(acertos, total) retorna 7,5 quando recebe 30 acertos em 40 questões, sem acessar banco de dados ou rede. Esse teste é classificado como:",
+      "alternativas": ["Teste de aceitação", "Teste de carga", "Teste de integração", "Teste de unidade", "Teste de regressão visual"],
+      "correta": "D",
+      "comentario": "Testes de unidade verificam a menor parte testável do software (uma função ou método) de forma isolada de dependências externas, como banco de dados e rede."
+    },
+    {
+      "codigo": "DEMO-ADS-09", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Engenharia de Software", "ano": 2023, "dificuldade": "media",
+      "enunciado": "Um commit com defeito já foi enviado à branch principal, compartilhada por toda a equipe. Qual comando do Git desfaz as alterações desse commit criando um novo commit, sem reescrever o histórico já publicado?",
+      "alternativas": ["git reset --hard", "git commit --amend", "git rebase -i", "git push --force", "git revert"],
+      "correta": "E",
+      "comentario": "git revert cria um novo commit que aplica o inverso das alterações do commit indicado, preservando o histórico. reset, amend e rebase reescrevem o histórico e exigiriam push forçado, o que prejudica os demais integrantes."
+    },
+    {
+      "codigo": "DEMO-ADS-10", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Redes de Computadores", "ano": 2018, "dificuldade": "facil",
+      "enunciado": "Sobre os protocolos da camada de transporte TCP e UDP, assinale a alternativa correta.",
+      "alternativas": ["O UDP garante a entrega ordenada dos segmentos.", "O TCP é orientado à conexão e oferece entrega confiável, com confirmação e retransmissão.", "O TCP não realiza controle de fluxo.", "O UDP estabelece conexão por meio do three-way handshake.", "Ambos operam na camada de rede do modelo OSI."],
+      "correta": "B",
+      "comentario": "O TCP estabelece conexão (three-way handshake) e garante entrega confiável e ordenada, com confirmações, retransmissões e controle de fluxo. O UDP não é orientado à conexão e não oferece essas garantias. Ambos pertencem à camada de transporte."
+    },
+    {
+      "codigo": "DEMO-ADS-11", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Redes de Computadores", "ano": 2018, "dificuldade": "facil",
+      "enunciado": "Por padrão, qual porta TCP é utilizada pelo protocolo HTTPS?",
+      "alternativas": ["21", "25", "80", "443", "3306"],
+      "correta": "D",
+      "comentario": "O HTTPS (HTTP sobre TLS) usa a porta 443 por padrão. A porta 80 é do HTTP, a 21 do FTP, a 25 do SMTP e a 3306 do MySQL."
+    },
+    {
+      "codigo": "DEMO-ADS-12", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Segurança da Informação", "ano": 2021, "dificuldade": "media",
+      "enunciado": "Uma aplicação monta consultas SQL concatenando diretamente o texto digitado pelo usuário no campo de login. Qual é a forma mais adequada de evitar ataques de SQL Injection nesse cenário?",
+      "alternativas": ["Usar consultas parametrizadas (prepared statements).", "Ocultar as mensagens de erro do banco de dados.", "Criptografar a conexão com HTTPS.", "Limitar o tamanho do campo no formulário HTML.", "Trocar o banco relacional por arquivos de texto."],
+      "correta": "A",
+      "comentario": "Com consultas parametrizadas o valor informado é enviado separadamente do comando SQL e nunca é interpretado como código. HTTPS e limites no formulário não impedem a injeção, e ocultar erros apenas dificulta a exploração."
+    },
+    {
+      "codigo": "DEMO-ADS-13", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Segurança da Informação", "ano": 2023, "dificuldade": "media",
+      "enunciado": "Qual é a prática recomendada para armazenar as senhas dos usuários no banco de dados de uma aplicação web?",
+      "alternativas": ["Armazenar a senha em texto puro, protegida apenas pelas permissões do banco.", "Criptografar a senha com uma chave fixa guardada no código-fonte.", "Codificar a senha em Base64.", "Armazenar um hash gerado por um algoritmo lento e com salt, como bcrypt, scrypt ou Argon2.", "Armazenar somente o MD5 da senha, sem salt."],
+      "correta": "D",
+      "comentario": "Funções de hash lentas e com salt único por usuário (bcrypt, scrypt, Argon2) dificultam ataques de força bruta e de tabelas pré-calculadas. Base64 é apenas codificação reversível, e MD5 sem salt é rápido demais e vulnerável."
+    },
+    {
+      "codigo": "DEMO-ADS-14", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Programação e Desenvolvimento Web", "ano": 2023, "dificuldade": "media",
+      "enunciado": "Em uma API REST, qual método HTTP é normalmente utilizado para criar um novo recurso e NÃO é idempotente, ou seja, repetir a mesma requisição pode criar recursos duplicados?",
+      "alternativas": ["GET", "PUT", "DELETE", "HEAD", "POST"],
+      "correta": "E",
+      "comentario": "POST é usado para criar recursos e não é idempotente. GET, HEAD, PUT e DELETE são idempotentes: repetir a mesma requisição produz o mesmo estado no servidor."
+    },
+    {
+      "codigo": "DEMO-ADS-15", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Programação e Desenvolvimento Web", "ano": 2024, "dificuldade": "facil",
+      "enunciado": "No padrão arquitetural MVC (Model-View-Controller), qual componente recebe as requisições do usuário, aciona as regras de negócio e decide qual resposta ou visão será apresentada?",
+      "alternativas": ["Model", "View", "Controller", "Router do banco de dados", "Template CSS"],
+      "correta": "C",
+      "comentario": "O Controller intermedeia a interação: recebe a requisição, chama o Model (dados e regras de negócio) e seleciona a View que apresentará o resultado."
+    },
+    {
+      "codigo": "DEMO-ADS-16", "curso": "Análise e Desenvolvimento de Sistemas", "tema": "Programação e Desenvolvimento Web", "ano": 2024, "dificuldade": "media",
+      "enunciado": "Na programação orientada a objetos, ocultar os atributos internos de uma classe e permitir o acesso a eles apenas por meio de métodos públicos que validam os dados é um exemplo de:",
+      "alternativas": ["Herança", "Polimorfismo", "Sobrecarga", "Encapsulamento", "Acoplamento"],
+      "correta": "D",
+      "comentario": "Encapsulamento é esconder o estado interno do objeto e expor apenas uma interface controlada, o que garante que os dados permaneçam válidos."
+    },
+    {
+      "codigo": "DEMO-ADM-01", "curso": "Administração", "tema": "Marketing", "ano": 2018, "dificuldade": "facil",
+      "enunciado": "O composto de marketing (mix de marketing), proposto por McCarthy, é tradicionalmente formado pelos chamados 4 Ps. São eles:",
+      "alternativas": ["Planejamento, Pessoas, Processos e Preço", "Produto, Preço, Praça e Promoção", "Produto, Pesquisa, Público e Promoção", "Posicionamento, Preço, Pessoas e Praça", "Produto, Processos, Parcerias e Propaganda"],
+      "correta": "B",
+      "comentario": "Os 4 Ps de McCarthy são Produto, Preço, Praça (distribuição) e Promoção (comunicação)."
+    },
+    {
+      "codigo": "DEMO-ADM-02", "curso": "Administração", "tema": "Estratégia Organizacional", "ano": 2018, "dificuldade": "facil",
+      "enunciado": "Na análise SWOT, a chegada de um novo concorrente internacional ao mercado em que a empresa atua deve ser classificada como:",
+      "alternativas": ["Força", "Fraqueza", "Oportunidade", "Ameaça", "Missão"],
+      "correta": "D",
+      "comentario": "Na SWOT, forças e fraquezas são fatores internos; oportunidades e ameaças são externos. Um novo concorrente é um fator externo desfavorável, ou seja, uma ameaça."
+    },
+    {
+      "codigo": "DEMO-ADM-03", "curso": "Administração", "tema": "Finanças e Contabilidade", "ano": 2022, "dificuldade": "media",
+      "enunciado": "Uma empresa tem custos fixos mensais de R$ 20.000,00. Cada unidade do seu produto é vendida por R$ 50,00 e tem custo variável de R$ 30,00. Qual é o ponto de equilíbrio contábil mensal, em unidades?",
+      "alternativas": ["400 unidades", "667 unidades", "1.000 unidades", "2.000 unidades", "4.000 unidades"],
+      "correta": "C",
+      "comentario": "A margem de contribuição unitária é R$ 50 − R$ 30 = R$ 20. O ponto de equilíbrio é custos fixos ÷ margem de contribuição unitária: 20.000 ÷ 20 = 1.000 unidades."
+    },
+    {
+      "codigo": "DEMO-ADM-04", "curso": "Administração", "tema": "Finanças e Contabilidade", "ano": 2022, "dificuldade": "media",
+      "enunciado": "Um capital de R$ 1.000,00 é aplicado a juros compostos de 10% ao mês. Qual será o montante ao final de 2 meses?",
+      "alternativas": ["R$ 1.200,00", "R$ 1.100,00", "R$ 1.020,00", "R$ 1.210,00", "R$ 1.331,00"],
+      "correta": "D",
+      "comentario": "Nos juros compostos M = C × (1 + i)^n = 1.000 × 1,1² = 1.000 × 1,21 = R$ 1.210,00. R$ 1.200,00 seria o resultado com juros simples."
+    },
+    {
+      "codigo": "DEMO-ADM-05", "curso": "Administração", "tema": "Finanças e Contabilidade", "ano": 2023, "dificuldade": "dificil",
+      "enunciado": "Uma empresa apresenta ativo circulante de R$ 300.000,00 e passivo circulante de R$ 200.000,00. O índice de liquidez corrente dessa empresa é:",
+      "alternativas": ["0,67", "1,00", "1,50", "2,00", "5,00"],
+      "correta": "C",
+      "comentario": "Liquidez corrente = ativo circulante ÷ passivo circulante = 300.000 ÷ 200.000 = 1,5. Ou seja, a empresa tem R$ 1,50 de bens e direitos de curto prazo para cada R$ 1,00 de obrigações de curto prazo."
+    },
+    {
+      "codigo": "DEMO-ADM-06", "curso": "Administração", "tema": "Gestão de Pessoas", "ano": 2019, "dificuldade": "facil",
+      "enunciado": "Segundo a hierarquia de necessidades de Maslow, quais necessidades estão na base da pirâmide e, portanto, precisam ser atendidas primeiro?",
+      "alternativas": ["Autorrealização", "Estima", "Sociais", "Segurança", "Fisiológicas"],
+      "correta": "E",
+      "comentario": "Na pirâmide de Maslow, as necessidades fisiológicas (alimentação, sono, abrigo) estão na base, seguidas por segurança, sociais, estima e, no topo, autorrealização."
+    },
+    {
+      "codigo": "DEMO-ADM-07", "curso": "Administração", "tema": "Estratégia Organizacional", "ano": 2019, "dificuldade": "facil",
+      "enunciado": "As funções clássicas do processo administrativo, conhecidas pela sigla PODC, são:",
+      "alternativas": ["Planejar, Organizar, Dirigir e Controlar", "Produzir, Operar, Distribuir e Comercializar", "Projetar, Orçar, Decidir e Comunicar", "Prever, Ordenar, Delegar e Cobrar", "Planejar, Operar, Desenvolver e Capacitar"],
+      "correta": "A",
+      "comentario": "PODC significa Planejar, Organizar, Dirigir e Controlar, funções derivadas da abordagem clássica da administração."
+    },
+    {
+      "codigo": "DEMO-ADM-08", "curso": "Administração", "tema": "Logística e Operações", "ano": 2023, "dificuldade": "media",
+      "enunciado": "Na classificação de estoques pela curva ABC, os itens da classe A caracterizam-se por:",
+      "alternativas": ["Representar a maior quantidade de itens e o menor valor total.", "Representar poucos itens que concentram a maior parte do valor total do estoque.", "Serem sempre os itens de menor giro.", "Não exigirem controle, por terem baixo impacto financeiro.", "Serem os itens de reposição automática obrigatória."],
+      "correta": "B",
+      "comentario": "A curva ABC aplica o princípio de Pareto: a classe A reúne uma pequena parcela dos itens que concentra a maior parte do valor e, por isso, exige controle mais rigoroso."
+    },
+    {
+      "codigo": "DEMO-DIR-01", "curso": "Direito", "tema": "Direito Constitucional", "ano": 2018, "dificuldade": "media",
+      "enunciado": "De acordo com o art. 60, § 4º, da Constituição Federal de 1988, NÃO será objeto de deliberação a proposta de emenda tendente a abolir determinadas matérias (cláusulas pétreas). Qual das alternativas abaixo NÃO está expressamente prevista nesse rol?",
+      "alternativas": ["A forma federativa de Estado", "O voto direto, secreto, universal e periódico", "A separação dos Poderes", "Os direitos e garantias individuais", "A forma republicana de governo"],
+      "correta": "E",
+      "comentario": "O art. 60, § 4º, lista como cláusulas pétreas a forma federativa de Estado, o voto direto, secreto, universal e periódico, a separação dos Poderes e os direitos e garantias individuais. A forma republicana de governo não consta expressamente desse rol."
+    },
+    {
+      "codigo": "DEMO-DIR-02", "curso": "Direito", "tema": "Direito Constitucional", "ano": 2018, "dificuldade": "facil",
+      "enunciado": "Qual remédio constitucional é cabível sempre que alguém sofrer ou se achar ameaçado de sofrer violência ou coação em sua liberdade de locomoção, por ilegalidade ou abuso de poder?",
+      "alternativas": ["Habeas data", "Mandado de segurança", "Habeas corpus", "Mandado de injunção", "Ação popular"],
+      "correta": "C",
+      "comentario": "Conforme o art. 5º, LXVIII, da CF/88, o habeas corpus protege a liberdade de locomoção. O habeas data se refere a informações pessoais, e o mandado de segurança protege direito líquido e certo não amparado por habeas corpus ou habeas data."
+    },
+    {
+      "codigo": "DEMO-DIR-03", "curso": "Direito", "tema": "Direito Constitucional", "ano": 2021, "dificuldade": "media",
+      "enunciado": "Conforme a Constituição Federal, conceder-se-á mandado de segurança para proteger direito líquido e certo, NÃO amparado por:",
+      "alternativas": ["Ação civil pública ou ação popular", "Habeas corpus ou habeas data", "Mandado de injunção ou ação direta", "Recurso extraordinário ou especial", "Reclamação constitucional"],
+      "correta": "B",
+      "comentario": "O art. 5º, LXIX, da CF/88 prevê o mandado de segurança para proteger direito líquido e certo não amparado por habeas corpus ou habeas data, quando o responsável pela ilegalidade ou abuso de poder for autoridade pública ou agente no exercício de atribuições do Poder Público. Trata-se, portanto, de um remédio residual."
+    },
+    {
+      "codigo": "DEMO-DIR-04", "curso": "Direito", "tema": "Direito Civil", "ano": 2019, "dificuldade": "facil",
+      "enunciado": "Segundo o Código Civil brasileiro (art. 5º), a menoridade cessa e a pessoa fica habilitada à prática de todos os atos da vida civil aos:",
+      "alternativas": ["16 anos completos", "18 anos completos", "21 anos completos", "14 anos completos", "17 anos completos"],
+      "correta": "B",
+      "comentario": "O art. 5º do Código Civil de 2002 estabelece que a menoridade cessa aos 18 anos completos. O Código Civil de 1916 previa 21 anos."
+    },
+    {
+      "codigo": "DEMO-DIR-05", "curso": "Direito", "tema": "Direito Civil", "ano": 2022, "dificuldade": "media",
+      "enunciado": "Conforme o art. 11 do Código Civil, com exceção dos casos previstos em lei, os direitos da personalidade são:",
+      "alternativas": ["Transmissíveis e renunciáveis", "Intransmissíveis e irrenunciáveis, não podendo seu exercício sofrer limitação voluntária", "Livremente negociáveis pelo titular", "Transmissíveis aos herdeiros em vida", "Renunciáveis mediante escritura pública"],
+      "correta": "B",
+      "comentario": "O art. 11 do Código Civil dispõe que, com exceção dos casos previstos em lei, os direitos da personalidade são intransmissíveis e irrenunciáveis, não podendo o seu exercício sofrer limitação voluntária."
+    },
+    {
+      "codigo": "DEMO-DIR-06", "curso": "Direito", "tema": "Direito Penal", "ano": 2021, "dificuldade": "facil",
+      "enunciado": "A afirmação \"Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal\" expressa qual princípio do Direito Penal?",
+      "alternativas": ["Princípio da insignificância", "Princípio da legalidade (reserva legal e anterioridade)", "Princípio da presunção de inocência", "Princípio da proporcionalidade", "Princípio do contraditório"],
+      "correta": "B",
+      "comentario": "Trata-se do princípio da legalidade, previsto no art. 1º do Código Penal e no art. 5º, XXXIX, da CF/88. Ele abrange a reserva legal (só a lei define crimes) e a anterioridade (a lei deve ser anterior ao fato)."
+    },
+    {
+      "codigo": "DEMO-DIR-07", "curso": "Direito", "tema": "Direito do Consumidor", "ano": 2023, "dificuldade": "facil",
+      "enunciado": "De acordo com o art. 49 do Código de Defesa do Consumidor, o consumidor que contrata fora do estabelecimento comercial (por exemplo, pela internet) pode desistir do contrato no prazo de:",
+      "alternativas": ["3 dias", "7 dias", "15 dias", "30 dias", "90 dias"],
+      "correta": "B",
+      "comentario": "O art. 49 do CDC garante o direito de arrependimento em 7 dias, contados da assinatura do contrato ou do recebimento do produto ou serviço, sempre que a contratação ocorrer fora do estabelecimento comercial."
+    },
+    {
+      "codigo": "DEMO-DIR-08", "curso": "Direito", "tema": "Direito do Trabalho", "ano": 2024, "dificuldade": "media",
+      "enunciado": "Pela regra geral da CLT, após cada período de 12 meses de vigência do contrato de trabalho, o empregado que não teve mais de 5 faltas injustificadas tem direito a férias de:",
+      "alternativas": ["15 dias corridos", "20 dias corridos", "24 dias corridos", "30 dias corridos", "45 dias corridos"],
+      "correta": "D",
+      "comentario": "O art. 130, I, da CLT assegura 30 dias corridos de férias ao empregado que não tiver mais de 5 faltas injustificadas no período aquisitivo de 12 meses."
+    }
+  ],
+  "topicos": [
+    {
+      "autor": "bruna@enahub.demo",
+      "titulo": "Como vocês estão estudando Banco de Dados para o ENADE?",
+      "conteudo": "Estou revisando normalização e SQL (GROUP BY e HAVING). Alguém tem dicas de como organizar o estudo de modelagem?",
+      "respostas": [
+        { "autor": "aluno@enahub.demo", "conteudo": "Eu faço um simulado curto por dia filtrando o tema Banco de Dados e depois leio o gabarito comentado." },
+        { "autor": "professor@enahub.demo", "conteudo": "Boa estratégia! Treinem também a identificação de dependências funcionais antes de normalizar." }
+      ]
+    },
+    {
+      "autor": "rafael@enahub.demo",
+      "titulo": "Dúvida: ponto de equilíbrio contábil x financeiro",
+      "conteudo": "Qual a diferença entre o ponto de equilíbrio contábil e o financeiro? Na questão de demonstração só aparece o contábil.",
+      "respostas": []
+    }
+  ]
+}
