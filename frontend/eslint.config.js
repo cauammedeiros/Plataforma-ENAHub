@@ -18,4 +18,9 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // Arquivos de configuração executados pelo Node
+    files: ['vite.config.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])
