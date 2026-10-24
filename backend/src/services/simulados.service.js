@@ -167,7 +167,9 @@ async function criar(usuario, opcoes) {
         nome = cursos[0] ? `Simulado — ${cursos[0].nome}` : 'Simulado geral';
     }
 
-    const inicio = new Date();
+    // DATETIME guarda segundos inteiros: descarta os milissegundos para o prazo
+    // gravado no banco ser exatamente o mesmo usado nos cálculos
+    const inicio = new Date(Math.floor(Date.now() / 1000) * 1000);
     const limite = new Date(inicio.getTime() + tempoMinutos * 60 * 1000);
 
     try {
@@ -234,10 +236,12 @@ async function obter(usuario, id) {
     );
 
     const agora = Date.now();
+    const restanteMs = Math.max(0, new Date(simulado.data_limite).getTime() - agora);
     return {
         ...base,
         agora: new Date(agora),
-        tempo_restante_segundos: Math.max(0, Math.floor((new Date(simulado.data_limite).getTime() - agora) / 1000)),
+        tempo_restante_ms: restanteMs,
+        tempo_restante_segundos: Math.floor(restanteMs / 1000),
         questoes: questoes.map((q) => ({
             ordem: q.ordem,
             id: q.id,

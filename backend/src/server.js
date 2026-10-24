@@ -24,7 +24,13 @@ async function iniciar() {
             .catch((erro) => console.error('Erro ao finalizar simulados expirados:', erro.message));
     }, INTERVALO_VERIFICACAO_MS).unref();
 
-    app.listen(PORT, () => {
+    app.listen(PORT, (erro) => {
+        if (erro) {
+            console.error(erro.code === 'EADDRINUSE'
+                ? `A porta ${PORT} já está em uso por outro programa. Defina outra porta em backend/.env (PORT=3001).`
+                : `Não foi possível iniciar o servidor: ${erro.message}`);
+            process.exit(1);
+        }
         console.log(`Servidor rodando em http://localhost:${PORT}`);
     });
 }
