@@ -134,6 +134,34 @@ describe('Simulados: execução, salvamento, tempo e correção (RF013–RF019, 
         assert.equal(total, 1);
     });
 
+    test('todas corretas = nota 10; todas incorretas = nota 0 com erros contados', async () => {
+        for (const [acertar, esperado] of [[true, [5, 0, 0, 100, 10]], [false, [0, 5, 0, 0, 0]]]) {
+            const id = await iniciar(aluno, { quantidade: 5, tempo_minutos: 10 });
+            const prova = await api('GET', `/api/simulados/${id}`, { token: aluno });
+            const gabarito = await corretas(prova.corpo.questoes.map((q) => q.id));
+            for (const q of prova.corpo.questoes) {
+                const alt = acertar ? gabarito[q.id] : q.alternativas.find((a) => a.id !== gabarito[q.id]).id;
+                await api('PUT', `/api/simulados/${id}/respostas/${q.id}`, { token: aluno, corpo: { alternativa_id: alt } });
+            }
+            await api('POST', `/api/simulados/${id}/finalizar`, { token: aluno });
+            const r = (await api('GET', `/api/simulados/${id}/resultado`, { token: aluno })).corpo;
+            assert.deepEqual([r.acertos, r.erros, r.em_branco, r.percentual, r.nota], esperado);
+        }
+    });
+
+    test('iniciar dois simulados ao mesmo tempo cria apenas um', async () => {
+        const respostas = await Promise.all([1, 2, 3].map(() =>
+            api('POST', '/api/simulados', { token: aluno, corpo: { quantidade: 2, tempo_minutos: 5 } })));
+        assert.equal(respostas.filter((r) => r.status === 201).length, 1);
+        assert.equal(respostas.filter((r) => r.status === 409).length, 2);
+        const [[{ total }]] = await db.query(
+            "SELECT COUNT(*) AS total FROM simulados s JOIN usuarios u ON u.id = s.usuario_id WHERE u.email = 'aluno@enahub.demo' AND s.status = 'em_andamento'"
+        );
+        assert.equal(total, 1);
+        const criado = respostas.find((r) => r.status === 201).corpo.simulado.id;
+        await api('POST', `/api/simulados/${criado}/finalizar`, { token: aluno });
+    });
+
     test('simulado sem nenhuma resposta: nota 0 e todas em branco', async () => {
         const id = await iniciar(aluno, { quantidade: 3, tempo_minutos: 5 });
         await api('POST', `/api/simulados/${id}/finalizar`, { token: aluno });

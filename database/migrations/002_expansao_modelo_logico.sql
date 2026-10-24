@@ -188,9 +188,10 @@ ALTER TABLE `simulados`
   ADD COLUMN `finalizado_por` enum('usuario','tempo') DEFAULT NULL,
   ADD COLUMN `em_branco` int NOT NULL DEFAULT 0 AFTER `erros`,
   ADD COLUMN `nota` decimal(4,2) DEFAULT NULL AFTER `percentual`,
-  -- Garante no banco que cada usuário tem no máximo um simulado em andamento
-  ADD COLUMN `usuario_em_andamento` int GENERATED ALWAYS AS (IF(`status` = 'em_andamento', `usuario_id`, NULL)) VIRTUAL,
-  ADD UNIQUE KEY `uk_simulados_um_em_andamento` (`usuario_em_andamento`),
+  -- "No máximo um simulado em andamento por usuário" é garantido no back-end
+  -- (transação com SELECT ... FOR UPDATE na linha do usuário), de forma
+  -- compatível com todas as versões do MySQL 8.
+  ADD KEY `idx_simulados_usuario_status` (`usuario_id`, `status`),
   ADD KEY `idx_simulados_status_limite` (`status`, `data_limite`),
   ADD CONSTRAINT `fk_simulados_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_simulados_modelo` FOREIGN KEY (`modelo_id`) REFERENCES `modelos_simulado` (`id`) ON DELETE SET NULL,

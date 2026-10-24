@@ -172,24 +172,29 @@ async function criar(usuario, opcoes) {
     const inicio = new Date(Math.floor(Date.now() / 1000) * 1000);
     const limite = new Date(inicio.getTime() + tempoMinutos * 60 * 1000);
 
-    try {
-        return await db.transacao(async (conn) => {
-            const [resultado] = await conn.query(
-                `INSERT INTO simulados (usuario_id, nome, modelo_id, curso_id, quantidade_questoes,
-                                        tempo_minutos, data_inicio, data_limite, status)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'em_andamento')`,
-                [usuario.id, nome, modeloId, cursoId || null, ids.length, tempoMinutos, inicio, limite]
-            );
-            const simuladoId = resultado.insertId;
-            const valores = ids.map((questaoId, i) => [simuladoId, questaoId, i + 1]);
-            await conn.query('INSERT INTO simulado_questoes (simulado_id, questao_id, ordem) VALUES ?', [valores]);
-            return { id: simuladoId, nome, quantidade_questoes: ids.length, tempo_minutos: tempoMinutos, data_limite: limite };
-        });
-    } catch (erro) {
-        // Índice único uk_simulados_um_em_andamento: duas requisições simultâneas
-        if (erro.code === 'ER_DUP_ENTRY') throw new AppError(409, 'Você já possui um simulado em andamento.');
-        throw erro;
-    }
+    return db.transacao(async (conn) => {
+        // Bloqueia a linha do usuário: duas requisições simultâneas de "iniciar"
+        // são serializadas e a segunda encontra o simulado já criado pela primeira
+        await conn.query('SELECT id FROM usuarios WHERE id = ? FOR UPDATE', [usuario.id]);
+        const [abertos] = await conn.query(
+            "SELECT id FROM simulados WHERE usuario_id = ? AND status = 'em_andamento'", [usuario.id]
+        );
+        if (abertos[0]) {
+            throw new AppError(409, 'Você já possui um simulado em andamento. Conclua-o antes de iniciar outro.',
+                { simulado_id: abertos[0].id });
+        }
+
+        const [resultado] = await conn.query(
+            `INSERT INTO simulados (usuario_id, nome, modelo_id, curso_id, quantidade_questoes,
+                                    tempo_minutos, data_inicio, data_limite, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'em_andamento')`,
+            [usuario.id, nome, modeloId, cursoId || null, ids.length, tempoMinutos, inicio, limite]
+        );
+        const simuladoId = resultado.insertId;
+        const valores = ids.map((questaoId, i) => [simuladoId, questaoId, i + 1]);
+        await conn.query('INSERT INTO simulado_questoes (simulado_id, questao_id, ordem) VALUES ?', [valores]);
+        return { id: simuladoId, nome, quantidade_questoes: ids.length, tempo_minutos: tempoMinutos, data_limite: limite };
+    });
 }
 
 /**

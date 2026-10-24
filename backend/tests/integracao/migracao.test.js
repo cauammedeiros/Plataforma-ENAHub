@@ -67,6 +67,22 @@ describe('Migrations preservam dados do esquema original', () => {
     test('rodar de novo não altera nada (idempotente)', async () => {
         await migrar({ silencioso: true });
         const [migracoes] = await conn.query('SELECT arquivo FROM schema_migrations ORDER BY arquivo');
-        assert.deepEqual(migracoes.map((m) => m.arquivo), ['001_estrutura_inicial.sql', '002_expansao_modelo_logico.sql']);
+        const arquivos = fs.readdirSync(path.join(__dirname, '..', '..', '..', 'database', 'migrations')).filter((a) => a.endsWith('.sql')).sort();
+        assert.deepEqual(migracoes.map((m) => m.arquivo), arquivos);
+    });
+
+    test('003 remove a coluna gerada criada por uma versão antiga da 002 (e não faz nada se ela não existe)', async () => {
+        await conn.query(`ALTER TABLE simulados DROP INDEX idx_simulados_usuario_status,
+            ADD COLUMN usuario_em_andamento int GENERATED ALWAYS AS (IF(status = 'em_andamento', usuario_id, NULL)) VIRTUAL,
+            ADD UNIQUE KEY uk_simulados_um_em_andamento (usuario_em_andamento)`);
+        const sql = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'database', 'migrations', '003_remove_coluna_gerada_simulados.sql'), 'utf8');
+        await conn.query(sql);
+        const [colunas] = await conn.query("SHOW COLUMNS FROM simulados LIKE 'usuario_em_andamento'");
+        assert.equal(colunas.length, 0);
+        const [indices] = await conn.query("SHOW INDEX FROM simulados WHERE Key_name = 'idx_simulados_usuario_status'");
+        assert.ok(indices.length > 0);
+        await conn.query(sql); // segunda execução: nenhuma alteração
+        const [[{ total }]] = await conn.query('SELECT COUNT(*) AS total FROM simulados');
+        assert.equal(total, 1);
     });
 });
