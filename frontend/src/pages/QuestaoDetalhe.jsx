@@ -108,7 +108,7 @@ export default function QuestaoDetalhe() {
     }
   }
 
-  const correta = q.pode_editar ? q.alternativas.find((a) => a.correta)?.id : correcao?.alternativa_correta_id
+  const correta = q.pode_comentar ? q.alternativas.find((a) => a.correta)?.id : correcao?.alternativa_correta_id
 
   return (
     <div className="mx-auto" style={{ maxWidth: 900 }}>
@@ -134,11 +134,11 @@ export default function QuestaoDetalhe() {
             alternativas={q.alternativas}
             selecionada={selecionada}
             aoSelecionar={setSelecionada}
-            correta={q.pode_editar || correcao ? correta : undefined}
+            correta={q.pode_comentar || correcao ? correta : undefined}
             escolhida={correcao?.alternativa_escolhida_id}
           />
 
-          {!q.pode_editar && !correcao && (
+          {!q.pode_comentar && !correcao && (
             <button type="button" className="btn btn-dark mt-3" disabled={!selecionada || enviando} onClick={responder}>
               Responder
             </button>
@@ -156,12 +156,12 @@ export default function QuestaoDetalhe() {
         </div>
       </div>
 
-      {(correcao || q.pode_editar) && (
+      {(correcao || q.pode_comentar) && (
         <div className="card mt-3">
           <div className="card-body p-3 p-md-4">
             <h2 className="h6 fw-bold mb-3">Gabarito comentado</h2>
-            <Comentarios comentarios={correcao ? correcao.comentarios : q.comentarios} aoExcluir={q.pode_editar ? excluirComentario : undefined} />
-            {q.pode_editar && <NovoComentario questaoId={q.id} aoSalvar={recarregar} />}
+            <Comentarios comentarios={correcao ? correcao.comentarios : q.comentarios} aoExcluir={q.pode_comentar ? excluirComentario : undefined} />
+            {q.pode_comentar && q.status !== 'arquivada' && <NovoComentario questaoId={q.id} aoSalvar={recarregar} />}
           </div>
         </div>
       )}

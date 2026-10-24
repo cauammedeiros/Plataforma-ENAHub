@@ -276,6 +276,89 @@ function AbaSimuladosOficiais() {
   )
 }
 
+// --- Categorias: cursos e temas (caso de uso "Gerenciar categorias", RF007/RF009) ---
+function AbaCategorias() {
+  const toast = useToast()
+  const cursos = useRequisicao('/cursos')
+  const temas = useRequisicao('/temas')
+  const [novoCurso, setNovoCurso] = useState('')
+  const [novoTema, setNovoTema] = useState({ nome: '', curso_id: '' })
+  const [erros, setErros] = useState({})
+
+  async function criar(caminho, corpo, aoConcluir) {
+    try {
+      await api.post(caminho, corpo)
+      toast.sucesso('Categoria cadastrada.')
+      setErros({})
+      aoConcluir()
+    } catch (e) {
+      setErros(e.erros || {})
+      toast.erro(e.status === 409 ? 'Já existe uma categoria com esse nome.' : e.message)
+    }
+  }
+
+  return (
+    <div className="row g-4">
+      <div className="col-lg-5">
+        <div className="card"><div className="card-body">
+          <h2 className="h6 fw-bold">Cursos</h2>
+          {cursos.carregando && <Carregando />}
+          <ul className="list-unstyled small mb-3">
+            {cursos.dados?.map((c) => (
+              <li key={c.id} className="py-1 border-bottom">
+                {c.nome} <span className="text-secondary">· {temas.dados?.filter((t) => t.curso_id === c.id).length ?? 0} temas</span>
+              </li>
+            ))}
+          </ul>
+          <form className="d-flex gap-2 align-items-start" noValidate
+            onSubmit={(e) => { e.preventDefault(); criar('/cursos', { nome: novoCurso.trim() }, () => { setNovoCurso(''); cursos.recarregar() }) }}>
+            <div className="flex-grow-1">
+              <input className={`form-control ${erros.nome && !novoTema.nome ? 'is-invalid' : ''}`} aria-label="Nome do novo curso"
+                placeholder="Novo curso" maxLength={100} value={novoCurso} onChange={(e) => setNovoCurso(e.target.value)} />
+            </div>
+            <button type="submit" className="btn btn-dark" disabled={novoCurso.trim().length < 2}>Adicionar</button>
+          </form>
+        </div></div>
+      </div>
+      <div className="col-lg-7">
+        <div className="card"><div className="card-body">
+          <h2 className="h6 fw-bold">Temas / áreas</h2>
+          {temas.carregando && <Carregando />}
+          <div className="table-responsive lista-selecao mb-3 border-0">
+            <table className="table table-sm small mb-0">
+              <thead><tr><th>Tema</th><th>Curso</th></tr></thead>
+              <tbody>
+                {temas.dados?.map((t) => <tr key={t.id}><td>{t.nome}</td><td className="text-secondary">{t.curso || 'Formação geral'}</td></tr>)}
+              </tbody>
+            </table>
+          </div>
+          <form className="row g-2" noValidate
+            onSubmit={(e) => {
+              e.preventDefault()
+              criar('/temas', { nome: novoTema.nome.trim(), curso_id: novoTema.curso_id ? Number(novoTema.curso_id) : null },
+                () => { setNovoTema({ nome: '', curso_id: novoTema.curso_id }); temas.recarregar() })
+            }}>
+            <div className="col-sm-5">
+              <input className="form-control" aria-label="Nome do novo tema" placeholder="Novo tema" maxLength={100}
+                value={novoTema.nome} onChange={(e) => setNovoTema({ ...novoTema, nome: e.target.value })} />
+            </div>
+            <div className="col-sm-4">
+              <select className="form-select" aria-label="Curso do tema" value={novoTema.curso_id}
+                onChange={(e) => setNovoTema({ ...novoTema, curso_id: e.target.value })}>
+                <option value="">Formação geral</option>
+                {cursos.dados?.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+              </select>
+            </div>
+            <div className="col-sm-3 d-grid">
+              <button type="submit" className="btn btn-dark" disabled={novoTema.nome.trim().length < 2}>Adicionar</button>
+            </div>
+          </form>
+        </div></div>
+      </div>
+    </div>
+  )
+}
+
 // --- Relatórios (RF033) ------------------------------------------------------
 function AbaRelatorios() {
   const { dados: r, carregando, erro, recarregar } = useRequisicao('/admin/relatorios')
@@ -348,6 +431,7 @@ const ABAS = {
   usuarios: { rotulo: 'Usuários', componente: AbaUsuarios, perfis: ['admin'] },
   denuncias: { rotulo: 'Denúncias', componente: AbaDenuncias, perfis: ['admin'] },
   simulados: { rotulo: 'Simulados oficiais', componente: AbaSimuladosOficiais, perfis: ['admin'] },
+  categorias: { rotulo: 'Categorias', componente: AbaCategorias, perfis: ['admin'] },
   relatorios: { rotulo: 'Relatórios', componente: AbaRelatorios, perfis: ['admin'] },
 }
 

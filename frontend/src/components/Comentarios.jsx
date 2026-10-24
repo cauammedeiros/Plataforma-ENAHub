@@ -1,4 +1,6 @@
+import { useAuth } from '../contexts/contextos'
 import { PERFIS } from '../utils/formatar'
+import BotaoDenunciar from './BotaoDenunciar'
 
 function linkSeguro(url) {
   return /^https?:\/\//i.test(url || '') ? url : null
@@ -6,6 +8,7 @@ function linkSeguro(url) {
 
 // Gabarito comentado: explicações com texto, imagem e vídeo (RF024, RF025)
 export default function Comentarios({ comentarios, aoExcluir }) {
+  const { usuario } = useAuth()
   if (!comentarios?.length) {
     return <p className="small text-secondary mb-0">Ainda não há comentários para esta questão.</p>
   }
@@ -26,11 +29,14 @@ export default function Comentarios({ comentarios, aoExcluir }) {
               ▶ Assistir vídeo explicativo
             </a>
           )}
-          {aoExcluir && (
-            <button type="button" className="btn btn-link btn-sm text-danger p-0 ms-3" onClick={() => aoExcluir(c.id)}>
-              Remover
-            </button>
-          )}
+          <div className="d-flex gap-3 mt-1">
+            {aoExcluir && (usuario.perfil === 'admin' || c.usuario_id === usuario.id) && (
+              <button type="button" className="btn btn-link btn-sm text-danger p-0" onClick={() => aoExcluir(c.id)}>
+                Remover
+              </button>
+            )}
+            {c.usuario_id !== usuario.id && <BotaoDenunciar tipo="comentario" id={c.id} />}
+          </div>
         </div>
       ))}
     </div>

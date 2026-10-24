@@ -108,7 +108,9 @@ async function listarComentarios(questaoId) {
 
 /**
  * Consulta individual. A alternativa correta e os comentários (que revelam
- * a resposta) só são enviados a quem pode editar a questão.
+ * a resposta) só são enviados a professores e administradores, que podem
+ * comentar qualquer questão (RF024). Alunos só os veem no modo prática ou
+ * no gabarito, depois de responder.
  */
 async function detalhar(usuario, id) {
     const questao = await buscarRegistro(id);
@@ -125,7 +127,7 @@ async function detalhar(usuario, id) {
         [id, usuario.id, id]
     );
 
-    const completo = podeEditar(usuario, questao);
+    const completo = ehGestor(usuario);
     const [alternativas] = await db.query(
         `SELECT id, letra, texto${completo ? ', correta' : ''} FROM alternativas WHERE questao_id = ? ORDER BY letra`,
         [id]
@@ -146,7 +148,8 @@ async function detalhar(usuario, id) {
         criado_por: questao.criado_por,
         autor: info.autor,
         favorita: Boolean(info.favorita),
-        pode_editar: completo,
+        pode_editar: podeEditar(usuario, questao),
+        pode_comentar: completo,
         alternativas: alternativas.map((a) => (completo ? { ...a, correta: Boolean(a.correta) } : a)),
         comentarios: completo ? await listarComentarios(id) : undefined
     };

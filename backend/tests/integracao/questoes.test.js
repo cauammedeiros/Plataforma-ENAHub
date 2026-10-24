@@ -150,6 +150,30 @@ describe('Banco de questões', () => {
         assert.deepEqual(favs.corpo.map((f) => f.id), [q[1].id]);
     });
 
+    test('professor vê o gabarito e comenta questão de outro autor; aluno não vê o gabarito', async () => {
+        const daSeed = (await api('GET', '/api/questoes?busca=HTTPS', { token: aluno })).corpo.questoes[0];
+        const comoProf = await api('GET', `/api/questoes/${daSeed.id}`, { token: prof });
+        assert.equal(comoProf.corpo.pode_editar, false);
+        assert.equal(comoProf.corpo.pode_comentar, true);
+        assert.equal(comoProf.corpo.alternativas.filter((a) => a.correta).length, 1);
+        const c = await api('POST', `/api/questoes/${daSeed.id}/comentarios`, { token: prof, corpo: { texto: 'Dica do professor: HTTPS = HTTP + TLS.' } });
+        assert.equal(c.status, 201);
+        const comoAluno = await api('GET', `/api/questoes/${daSeed.id}`, { token: aluno });
+        assert.equal(comoAluno.corpo.pode_comentar, false);
+        assert.ok(comoAluno.corpo.alternativas.every((a) => !('correta' in a)));
+    });
+
+    test('categorias: admin cadastra curso e tema; duplicados e aluno são recusados', async () => {
+        const curso = await api('POST', '/api/cursos', { token: admin, corpo: { nome: 'Enfermagem' } });
+        assert.equal(curso.status, 201);
+        assert.equal((await api('POST', '/api/cursos', { token: admin, corpo: { nome: 'ENFERMAGEM' } })).status, 409);
+        assert.equal((await api('POST', '/api/cursos', { token: aluno, corpo: { nome: 'Medicina' } })).status, 403);
+        assert.equal((await api('POST', '/api/cursos', { token: prof, corpo: { nome: 'Medicina' } })).status, 403);
+        const tema = await api('POST', '/api/temas', { token: prof, corpo: { nome: 'Saúde Coletiva', curso_id: curso.corpo.id } });
+        assert.equal(tema.status, 201);
+        assert.equal((await api('POST', '/api/temas', { token: admin, corpo: { nome: 'saude coletiva', curso_id: curso.corpo.id } })).status, 409);
+    });
+
     test('professor adiciona comentário com mídia (RF024, RF025)', async () => {
         const q = (await api('GET', '/api/questoes?limite=1', { token: aluno })).corpo.questoes[0];
         const r = await api('POST', `/api/questoes/${q.id}/comentarios`, {
