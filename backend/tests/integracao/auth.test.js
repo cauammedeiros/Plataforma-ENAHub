@@ -123,6 +123,28 @@ describe('Autenticação, perfil e permissões', () => {
         assert.ok(await login(api, 'aluna.teste@unifor.br', 'NovaSenha2'));
     });
 
+    test('novo pedido de recuperação invalida o link anterior; link não volta na resposta por padrão', async () => {
+        const authService = require('../../src/services/auth.service');
+        const antigo = new URL(await authService.solicitarRecuperacao('bruna@enahub.demo')).searchParams.get('token');
+        const novo = new URL(await authService.solicitarRecuperacao('bruna@enahub.demo')).searchParams.get('token');
+        assert.equal((await api('POST', '/api/auth/redefinir-senha', { corpo: { token: antigo, nova_senha: 'Bruna2026x' } })).status, 400);
+        assert.equal((await api('POST', '/api/auth/redefinir-senha', { corpo: { token: novo, nova_senha: 'Enahub@2026' } })).status, 200);
+
+        const r = await api('POST', '/api/auth/esqueci-senha', { corpo: { email: 'bruna@enahub.demo' } });
+        assert.equal(r.status, 200);
+        assert.equal(r.corpo.link_desenvolvimento, undefined);
+    });
+
+    test('limpeza remove sessões e links vencidos', async () => {
+        const db = require('../../src/database');
+        const [[u]] = await db.query("SELECT id FROM usuarios WHERE email = 'bruna@enahub.demo'");
+        await db.query("INSERT INTO sessoes (usuario_id, token_hash, expira_em) VALUES (?, REPEAT('a', 64), '2020-01-01')", [u.id]);
+        const { limparExpirados } = require('../../src/services/auth.service');
+        assert.ok(await limparExpirados() >= 1);
+        const [[{ total }]] = await db.query("SELECT COUNT(*) AS total FROM sessoes WHERE expira_em < NOW()");
+        assert.equal(total, 0);
+    });
+
     test('edição de perfil e troca de senha exigem a senha atual (RF004)', async () => {
         const token = await login(api, 'aluna.teste@unifor.br', 'NovaSenha2');
         const r = await api('PUT', '/api/usuarios/me', { token, corpo: { nome: 'Aluna Editada', instituicao: 'Universidade Federal do Ceará (UFC)' } });

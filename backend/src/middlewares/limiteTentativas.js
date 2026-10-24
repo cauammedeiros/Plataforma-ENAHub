@@ -1,29 +1,56 @@
 const config = require('../config');
 
 /**
- * Limite simples de requisições por IP (em memória), usado no login e na
+ * Limite de tentativas malsucedidas (em memória), usado no login, no cadastro e na
  * recuperação de senha para dificultar ataques de força bruta.
+ *
+ * Por padrão só as respostas de erro (status >= 400) contam (contarTodas = false). Assim, vários usuários
+ * entrando pelo mesmo computador/rede (ex.: laboratório ou apresentação) não
+ * são bloqueados por logins bem-sucedidos.
+ * A chave combina IP, rota e e-mail informado.
  */
-function limiteTentativas({ maximo, janelaMinutos }) {
+function limiteTentativas({ maximo, janelaMinutos, contarTodas = false }) {
     const registros = new Map();
     const janelaMs = janelaMinutos * 60 * 1000;
 
-    return (req, res, next) => {
-        if (config.ambiente === 'test') return next();
+    function chaveDe(req) {
+        const email = String(req.body?.email || '').trim().toLowerCase();
+        return `${req.ip}:${req.path}:${email}`;
+    }
+
+    const middleware = (req, res, next) => {
+        if (config.ambiente === 'test' && !middleware.ativoEmTestes) return next();
 
         const agora = Date.now();
-        const chave = `${req.ip}:${req.path}`;
+        const chave = chaveDe(req);
         const registro = registros.get(chave);
-        if (!registro || agora > registro.expira) {
-            registros.set(chave, { total: 1, expira: agora + janelaMs });
-            return next();
+        if (registro && agora <= registro.expira && registro.falhas >= maximo) {
+            const minutos = Math.ceil((registro.expira - agora) / 60000);
+            return res.status(429).json({
+                mensagem: `Muitas tentativas. Tente novamente em ${minutos} minuto(s).`
+            });
         }
-        registro.total++;
-        if (registro.total > maximo) {
-            return res.status(429).json({ mensagem: 'Muitas tentativas. Aguarde alguns minutos e tente novamente.' });
-        }
+
+        res.on('finish', () => {
+            if (res.statusCode === 429 || (!contarTodas && res.statusCode < 400)) return;
+            const atual = registros.get(chave);
+            if (!atual || Date.now() > atual.expira) {
+                registros.set(chave, { falhas: 1, expira: Date.now() + janelaMs });
+            } else {
+                atual.falhas++;
+            }
+        });
         next();
     };
+
+    // Limpeza periódica para não acumular chaves antigas na memória
+    setInterval(() => {
+        const agora = Date.now();
+        for (const [chave, registro] of registros) if (agora > registro.expira) registros.delete(chave);
+    }, janelaMs).unref();
+
+    middleware.ativoEmTestes = false;
+    return middleware;
 }
 
 module.exports = limiteTentativas;

@@ -20,7 +20,8 @@ function tratarErros(erro, req, res, next) {
         return res.status(409).json({ mensagem: 'Registro em uso por outros dados e não pode ser removido.' });
     }
 
-    console.error(erro);
+    // Não registra erro.sql: no mysql2 ele traz a consulta com os valores (e-mails, hashes...)
+    console.error(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl} → ${erro.code || 'ERRO'}: ${erro.stack || erro.message}`);
     res.status(500).json({ mensagem: 'Erro interno no servidor.' });
 }
 

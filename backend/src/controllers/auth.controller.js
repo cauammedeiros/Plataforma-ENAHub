@@ -46,8 +46,8 @@ async function esqueciSenha(req, res) {
 
     const link = await authService.solicitarRecuperacao(email);
     const resposta = { mensagem: MENSAGEM_RECUPERACAO };
-    // Sem servidor de e-mail configurado: em desenvolvimento o link volta na resposta para a demonstração
-    if (link && config.ambiente === 'development') resposta.link_desenvolvimento = link;
+    // Sem servidor de e-mail: só devolve o link se habilitado explicitamente (ver config.js)
+    if (link && config.linkRecuperacaoNaResposta) resposta.link_desenvolvimento = link;
     res.json(resposta);
 }
 

@@ -84,8 +84,13 @@ async function solicitarRecuperacao(email) {
 
     const token = gerarToken();
     const expiraEm = new Date(Date.now() + config.recuperacaoMinutos * 60 * 1000);
-    await db.query('INSERT INTO tokens_recuperacao (usuario_id, token_hash, expira_em) VALUES (?, ?, ?)',
-        [usuario.id, hashToken(token), expiraEm]);
+    await db.transacao(async (conn) => {
+        // Um novo pedido invalida os links anteriores ainda não usados
+        await conn.query('UPDATE tokens_recuperacao SET usado_em = ? WHERE usuario_id = ? AND usado_em IS NULL',
+            [new Date(), usuario.id]);
+        await conn.query('INSERT INTO tokens_recuperacao (usuario_id, token_hash, expira_em) VALUES (?, ?, ?)',
+            [usuario.id, hashToken(token), expiraEm]);
+    });
 
     const link = `${config.frontendUrl}/redefinir-senha?token=${token}`;
     if (config.ambiente !== 'test') {
@@ -114,6 +119,18 @@ async function redefinirSenha({ token, novaSenha }) {
     });
 }
 
+// Remove sessões e links de recuperação vencidos (executada periodicamente pelo servidor)
+async function limparExpirados() {
+    const agora = new Date();
+    const [sessoes] = await db.query('DELETE FROM sessoes WHERE expira_em < ?', [agora]);
+    const [tokens] = await db.query(
+        'DELETE FROM tokens_recuperacao WHERE expira_em < ? OR usado_em < ?',
+        [agora, new Date(Date.now() - 24 * 3600 * 1000)]
+    );
+    return sessoes.affectedRows + tokens.affectedRows;
+}
+
 module.exports = {
+    limparExpirados,
     cadastrar, login, logout, solicitarRecuperacao, redefinirSenha, buscarUsuarioPublico
 };

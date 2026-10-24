@@ -2,6 +2,7 @@ const app = require('./app');
 const config = require('./config');
 const db = require('./database');
 const { finalizarExpirados } = require('./services/simulados.service');
+const { limparExpirados } = require('./services/auth.service');
 
 const PORT = config.porta;
 
@@ -23,6 +24,11 @@ async function iniciar() {
             .then((total) => total && console.log(`${total} simulado(s) finalizado(s) por tempo esgotado.`))
             .catch((erro) => console.error('Erro ao finalizar simulados expirados:', erro.message));
     }, INTERVALO_VERIFICACAO_MS).unref();
+
+    // Limpa sessões e links de recuperação vencidos a cada hora
+    setInterval(() => {
+        limparExpirados().catch((erro) => console.error('Erro ao limpar sessões expiradas:', erro.message));
+    }, 60 * 60 * 1000).unref();
 
     app.listen(PORT, (erro) => {
         if (erro) {
