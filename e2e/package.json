@@ -1,0 +1,15 @@
+{
+  "name": "enahub-e2e",
+  "private": true,
+  "description": "Testes ponta a ponta do ENAHub no Google Chrome instalado (fora das dependências da aplicação)",
+  "scripts": {
+    "jornada": "node jornada.js",
+    "gestao": "node gestao.js"
+  },
+  "devDependencies": {
+    "playwright-core": "1.56.1"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

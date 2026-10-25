@@ -1,121 +1,60 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Route, Routes } from 'react-router-dom'
+import Layout from './components/Layout'
+import RotaProtegida, { RotaPublica } from './components/RotaProtegida'
+import Admin from './pages/Admin'
+import BancoQuestoes from './pages/BancoQuestoes'
+import Cadastro from './pages/Cadastro'
+import Desempenho from './pages/Desempenho'
+import EsqueciSenha from './pages/EsqueciSenha'
+import Favoritas from './pages/Favoritas'
+import Forum from './pages/Forum'
+import Inicio from './pages/Inicio'
+import Login from './pages/Login'
+import NaoEncontrada from './pages/NaoEncontrada'
+import Perfil from './pages/Perfil'
+import QuestaoDetalhe from './pages/QuestaoDetalhe'
+import QuestaoForm from './pages/QuestaoForm'
+import RedefinirSenha from './pages/RedefinirSenha'
+import Resultado from './pages/Resultado'
+import SimuladoExecucao from './pages/SimuladoExecucao'
+import Simulados from './pages/Simulados'
+import Termos from './pages/Termos'
+import Topico from './pages/Topico'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <Routes>
+      <Route element={<RotaPublica />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+      </Route>
+      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+      <Route path="/termos" element={<Termos />} />
 
-      <div className="ticks"></div>
+      <Route element={<RotaProtegida />}>
+        <Route element={<Layout />}>
+          <Route index element={<Inicio />} />
+          <Route path="questoes" element={<BancoQuestoes />} />
+          <Route path="questoes/:id" element={<QuestaoDetalhe />} />
+          <Route path="simulados" element={<Simulados />} />
+          <Route path="simulados/:id" element={<SimuladoExecucao />} />
+          <Route path="simulados/:id/resultado" element={<Resultado />} />
+          <Route path="desempenho" element={<Desempenho />} />
+          <Route path="favoritas" element={<Favoritas />} />
+          <Route path="forum" element={<Forum />} />
+          <Route path="forum/:id" element={<Topico />} />
+          <Route path="perfil" element={<Perfil />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+          <Route element={<RotaProtegida perfis={['admin', 'professor']} />}>
+            <Route path="admin" element={<Admin />} />
+            <Route path="admin/questoes/nova" element={<QuestaoForm />} />
+            <Route path="admin/questoes/:id/editar" element={<QuestaoForm />} />
+          </Route>
+          <Route path="*" element={<NaoEncontrada />} />
+        </Route>
+      </Route>
+    </Routes>
   )
 }
 
