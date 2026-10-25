@@ -11,11 +11,12 @@ require('fs').mkdirSync(SHOTS, { recursive: true });
 const BASE = process.env.E2E_URL || 'http://localhost:5173';
 const email = `e2e.${Date.now()}@unifor.br`;
 const senha = 'Teste2026e2e';
-const sql = (q) => execFileSync('mysql', ['-u', varBanco('DB_USER'), '-N', varBanco('DB_NAME'), '-e', q], { env: { ...process.env, MYSQL_PWD: varBanco('DB_PASSWORD') } }).toString().trim();
+const sql = (q) => execFileSync('mysql', ['-h', varBanco('DB_HOST') || 'localhost', '-P', varBanco('DB_PORT') || '3306', '-u', varBanco('DB_USER'), '-N', varBanco('DB_NAME'), '-e', q], { env: { ...process.env, MYSQL_PWD: varBanco('DB_PASSWORD') } }).toString().trim();
 const log = (...a) => console.log('•', ...a);
 
-// Lê a conexão do MySQL de backend/.env (usada só para conferir dados e encurtar o prazo de um simulado)
+// Lê a conexão do MySQL das variáveis de ambiente ou de backend/.env (usada só para conferir dados e encurtar o prazo de um simulado)
 function varBanco(nome) {
+  if (process.env[nome]) return process.env[nome]
   const env = require('fs').readFileSync(path.join(__dirname, '..', 'backend', '.env'), 'utf8')
   return (env.match(new RegExp(`^${nome}=(.*)$`, 'm')) || [])[1] || ''
 }

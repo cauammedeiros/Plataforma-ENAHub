@@ -7,7 +7,7 @@ Nenhum navegador é baixado, e esta pasta tem dependências próprias, separadas
 
 - Back-end e front-end rodando (veja o README principal); por padrão, o front-end em `http://localhost:5173`
 - Banco com o seed aplicado (`npm run db:setup` em `backend/`)
-- Cliente `mysql` no PATH (o roteiro `jornada` lê `DB_USER`, `DB_PASSWORD` e `DB_NAME` do `backend/.env`)
+- Cliente `mysql` no PATH (o roteiro `jornada` lê `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` e `DB_NAME` das variáveis de ambiente ou do `backend/.env`)
 - Google Chrome. Fora do macOS, informe o executável: `CHROME_PATH="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"`
 
 ## Uso
