@@ -92,7 +92,7 @@ Abreviações de caminhos: `be/` = `backend/src/` · `fe/` = `frontend/src/`
 | RNF003 | Armazenamento seguro conforme a LGPD | Hash de senha, mínimo de dados, ranking com nome abreviado, logs sem SQL/valores, exclusão de conta | ⚠️ | Sem HTTPS nem infraestrutura de produção (execução apenas local); sem revisão jurídica |
 | RNF003.1 | Exclusão de dados e da conta | RF005 | ✅ | |
 | RNF003.2 | Política de privacidade e termos de uso | `fe/pages/Termos.jsx`; aceite obrigatório no cadastro | ✅ | Texto acadêmico, sem valor jurídico |
-| RNF004 | Disponibilidade 24/7 | — | ❌ | Depende de hospedagem; o projeto roda apenas localmente |
+| RNF004 | Disponibilidade 24/7 | — | ❌ | **Decisão da equipe (25/10/2026):** não hospedar por enquanto (sem custos/riscos). O sistema roda localmente em cada computador; ver `docs/INSTALACAO.md` |
 | RNF005 | Responsividade (celular como acesso principal) | Bootstrap; E2E em 390×844 sem rolagem horizontal | ✅ | Verificado no Chrome. Safari (inclusive iOS) foi avaliado só visualmente pelo responsável, sem roteiro automatizado |
 | RNF006 | Navegação fluida | SPA com React Router | ✅ | |
 | RNF007 | Componentes reutilizáveis | `fe/components/` (Campo, Modal, Alternativas, InfoQuestao, BarraPercentual, Icone...) | ✅ | |

@@ -1,6 +1,6 @@
 # Relatório de testes do ENAHub
 
-Execução: 24/10/2026 (última rodada após a auditoria final), macOS (Apple Silicon), Node.js 26.12, MySQL 9.3 (Homebrew), Google Chrome (headless), branch `feat/enahub-mvp-03nov`.
+Execução: 24–25/10/2026, macOS (Apple Silicon), Node.js 26.12, MySQL Community Server 9.3.0 (instalador oficial) e **MySQL 8.0.46** (instância isolada, mesma versão usada pela equipe), Google Chrome (headless), branch `feat/enahub-mvp-03nov`.
 
 Todos os resultados abaixo vieram de testes **realmente executados**. O que não foi testado está listado em "Limitações".
 
@@ -18,6 +18,9 @@ Todos os resultados abaixo vieram de testes **realmente executados**. O que não
 | Jornada E2E no navegador | `cd e2e && npm run jornada` | ✅ sem erros de console ou HTTP 5xx |
 | Cenário E2E de gestão | `cd e2e && npm run gestao` | ✅ |
 | Auditoria de dependências | `npm audit` em backend, frontend e e2e | ✅ 0 vulnerabilidades (correções de patch: `body-parser` no back-end; `zod`, dependência de desenvolvimento do ESLint, no front-end) |
+| **Compatibilidade MySQL 8.0.46** | `npm test` + `db:setup` + `e2e` (jornada e gestão) sobre um MySQL 8.0.46 isolado (porta 3307) | ✅ **61/61** testes; app completo e os 2 roteiros E2E sem erros |
+| Proteção do `db:migrate` em banco antigo | banco importado do `enahub.sql` + `db:migrate` sem/com `--confirmar` | ✅ sem confirmação nada é alterado; com confirmação os dados são preservados |
+| Diagnóstico `npm run verificar` | cenário real, senha errada, banco inexistente, porta ocupada | ✅ cada problema identificado com a solução |
 | Migration 003 no banco de demonstração | `npm run db:migrate` (com backup antes) | ✅ contagens iguais antes e depois (5 usuários, 32 questões, 2 simulados, 14 respostas, 2 tópicos) |
 
 ## 2. Testes automatizados do back-end (`backend/tests`)
@@ -164,7 +167,8 @@ São executados no Google Chrome instalado (headless) com `playwright-core`, man
 ## 5. Limitações (o que NÃO foi testado)
 
 - **Safari:** não foi possível automatizar. O `safaridriver` exige a opção "Permitir automação remota", uma configuração de segurança do Mac que não foi alterada. O responsável pelo projeto avaliou manualmente as telas de login e início no Safari.
-- **MySQL 8.0:** os testes rodaram no MySQL 9.3. As migrations foram ajustadas para usar só recursos do 8.0, mas **não foram executadas num servidor 8.0**. Recomenda-se rodar `npm test` uma vez na máquina de um integrante com o MySQL 8.0.46.
+- **MySQL 8.0 no Windows:** a compatibilidade com o 8.0.46 foi comprovada no macOS. Ainda falta a primeira instalação real num Windows da equipe (MySQL Installer, PowerShell/CMD, `copy`, serviço `MySQL80`). O roteiro está em `docs/INSTALACAO.md`.
+- **MariaDB/XAMPP:** não suportado (collation `utf8mb4_0900_ai_ci` e a sintaxe `INSERT ... AS ... ON DUPLICATE KEY`). O `npm run verificar` detecta e avisa.
 
 - **Carga (RNF002, RNF008, RNF010):** não houve teste com 1.000 usuários simultâneos. As medições locais com um único usuário ficaram entre 3 e 10 ms por endpoint.
 - **Envio real de e-mail (RF003):** não há SMTP configurado. Só o link gerado foi testado.
