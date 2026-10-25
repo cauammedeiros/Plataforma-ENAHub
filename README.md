@@ -1,8 +1,12 @@
-# ENAHub — Plataforma de Estudos para o ENADE
+# Plataforma ENAHub
+
+**Sistema web de preparação para o ENADE** · Ciência da Computação · UNIFOR
 
 Projeto acadêmico da disciplina **Desenvolvimento de Plataformas Web** do curso de Ciência da Computação da UNIFOR.
 
 Equipe: Marco Cauã (back-end) · Pedro Pompeu (front-end) · João Victor (UI/UX) · Cauã Melo (gerência)
+
+Repositório original da equipe: [MarcoMarola/ENAHub](https://github.com/MarcoMarola/ENAHub)
 
 O ENAHub reúne em uma única plataforma o banco de questões, os simulados cronometrados com correção automática, o gabarito comentado, o acompanhamento de desempenho, o fórum e as ferramentas administrativas.
 
