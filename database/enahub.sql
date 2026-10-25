@@ -1,3 +1,10 @@
+-- ===========================================================================
+-- ATENÇÃO: arquivo HISTÓRICO da estrutura inicial (mantido sem alterações no SQL).
+-- Ele contém DROP TABLE e APAGA as tabelas e os dados do banco "enahub".
+-- NÃO execute este arquivo. Para criar ou atualizar o banco, use:
+--     cd backend && npm run db:setup
+-- (migrations em database/migrations, que não apagam dados)
+-- ===========================================================================
 -- MySQL dump 10.13  Distrib 8.0.46, for Win64 (x86_64)
 --
 -- Host: localhost    Database: enahub

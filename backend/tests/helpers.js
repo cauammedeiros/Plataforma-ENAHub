@@ -7,9 +7,10 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env'), quiet: true });
 
 process.env.NODE_ENV = 'test';
+const bancoPrincipal = process.env.DB_NAME || 'enahub';
 process.env.DB_NAME = process.env.DB_NAME_TEST || 'enahub_test';
-if (!process.env.DB_NAME.endsWith('_test')) {
-    throw new Error('Por segurança, o banco de testes precisa terminar com "_test".');
+if (!process.env.DB_NAME.endsWith('_test') || process.env.DB_NAME === bancoPrincipal) {
+    throw new Error(`Por segurança, o banco de testes precisa terminar com "_test" e ser diferente do banco principal (${bancoPrincipal}).`);
 }
 
 const mysql = require('mysql2/promise');
