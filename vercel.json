@@ -10,7 +10,7 @@
   },
   "rewrites": [
     { "source": "/api/:caminho*", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
