@@ -14,7 +14,7 @@ Abreviações de caminhos: `be/` = `backend/src/` · `fe/` = `frontend/src/`
 | Grupo | Concluídos | Parciais | Pendentes | Não verificados |
 |---|---|---|---|---|
 | Requisitos funcionais (RF001–RF033 + RF005.1 = 34) | 32 | 2 (RF003, RF025) | 0 | 0 |
-| Requisitos não funcionais (RNF001–RNF010 + RNF003.1/.2 = 12) | 7 | 2 (RNF003, RNF010) | 1 (RNF004) | 2 (RNF002, RNF008) |
+| Requisitos não funcionais (RNF001–RNF010 + RNF003.1/.2 = 12) | 7 | 3 (RNF003, RNF004, RNF010) | 0 | 2 (RNF002, RNF008) |
 | Casos de uso fora da lista RF (diagrama, seção 11: 6 itens) | 3 | 1 | 2 | 0 |
 
 ## Requisitos funcionais
@@ -92,7 +92,7 @@ Abreviações de caminhos: `be/` = `backend/src/` · `fe/` = `frontend/src/`
 | RNF003 | Armazenamento seguro conforme a LGPD | Hash de senha, mínimo de dados, ranking com nome abreviado, logs sem SQL/valores, exclusão de conta | ⚠️ | Sem HTTPS nem infraestrutura de produção (execução apenas local); sem revisão jurídica |
 | RNF003.1 | Exclusão de dados e da conta | RF005 | ✅ | |
 | RNF003.2 | Política de privacidade e termos de uso | `fe/pages/Termos.jsx`; aceite obrigatório no cadastro | ✅ | Texto acadêmico, sem valor jurídico |
-| RNF004 | Disponibilidade 24/7 | — | ❌ | **Decisão da equipe (25/10/2026):** não hospedar por enquanto (sem custos/riscos). O sistema roda localmente em cada computador; ver `docs/INSTALACAO.md` |
+| RNF004 | Disponibilidade 24/7 | Hospedagem gratuita de demonstração em https://plataforma-enahub.vercel.app (Vercel Hobby + Aiven MySQL Free), `docs/HOSPEDAGEM.md` | ⚠️ | Acessível pela internet, mas **sem garantia de 24/7**: planos gratuitos sem SLA, e o banco é desligado se ficar sem uso. Também roda localmente (`docs/INSTALACAO.md`) |
 | RNF005 | Responsividade (celular como acesso principal) | Bootstrap; E2E em 390×844 sem rolagem horizontal | ✅ | Verificado no Chrome. Safari (inclusive iOS) foi avaliado só visualmente pelo responsável, sem roteiro automatizado |
 | RNF006 | Navegação fluida | SPA com React Router | ✅ | |
 | RNF007 | Componentes reutilizáveis | `fe/components/` (Campo, Modal, Alternativas, InfoQuestao, BarraPercentual, Icone...) | ✅ | |

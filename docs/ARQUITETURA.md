@@ -20,6 +20,7 @@ Exatamente a arquitetura prevista no Plano de Trabalho (slide "Arquitetura Clien
 - O **back-end** valida, aplica as regras (permissões, tempo do simulado, correção) e conversa com o MySQL.
 - O **banco** guarda tudo de forma relacional e consistente (chaves estrangeiras, unicidade, índices).
 - Em desenvolvimento, o Vite (porta 5173) encaminha `/api` para o back-end (porta 3000).
+- **Online** (https://plataforma-enahub.vercel.app): o mesmo Express roda como Vercel Function, e o MySQL é um Aiven Free com TLS. Veja `docs/HOSPEDAGEM.md`.
 
 ## 2. Mapa das pastas
 
@@ -119,5 +120,5 @@ Excluir um usuário apaga em cascata os dados pessoais dele (LGPD). Questões j�
 
 - Recuperação de senha sem envio real de e-mail (o link aparece no terminal) — RF003 parcial.
 - Imagens e vídeos das explicações apenas por URL, sem upload — RF025 parcial.
-- Sem teste de carga com 1.000 usuários e sem hospedagem 24/7 (decisão da equipe: execução local).
+- Sem teste de carga com 1.000 usuários. A versão online (`docs/HOSPEDAGEM.md`) usa planos gratuitos, sem garantia de funcionamento 24/7.
 - "Enviar avisos aos usuários" (caso de uso) não foi implementado.

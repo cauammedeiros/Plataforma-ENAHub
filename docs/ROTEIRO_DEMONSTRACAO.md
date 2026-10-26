@@ -2,7 +2,7 @@
 
 Tudo o que aparece neste roteiro é funcionalidade real, com dados lidos e gravados no MySQL. As 32 questões da seed são **demonstrativas** (elaboradas pela equipe, não oficiais do ENADE), e isso deve ser dito ao mostrá-las.
 
-Senha de todas as contas de demonstração: `Enahub@2026`. As contas são `aluno@`, `professor@` e `admin@enahub.demo`.
+Senha de todas as contas de demonstração **locais**: `Enahub@2026`. As contas são `aluno@`, `professor@` e `admin@enahub.demo`. Na **versão online** (https://plataforma-enahub.vercel.app), as mesmas contas usam a senha privada guardada pelo responsável pelo projeto (`docs/HOSPEDAGEM.md`).
 
 ## Preparação (na véspera e 30 minutos antes)
 
@@ -10,6 +10,8 @@ Senha de todas as contas de demonstração: `Enahub@2026`. As contas são `aluno
 1. `git pull` na branch combinada, `npm install` em `backend/` e em `frontend/`.
 2. Em `backend/`, rode `npm test` (todos os testes devem passar no MySQL da máquina da apresentação).
 3. Gere as evidências para o plano B: com os servidores rodando, `cd e2e && npm install && npm run jornada && npm run gestao`. As screenshots ficam em `e2e/shots/`. Depois, volte o banco ao estado inicial (passo 2 abaixo), porque os roteiros criam dados de teste.
+
+4. **Versão online:** abra https://plataforma-enahub.vercel.app e faça login. Se der erro de conexão, o banco gratuito da Aiven pode ter sido desligado por falta de uso: console.aiven.io → `enahub-mysql` → **Power on** e espere alguns minutos.
 
 **30 minutos antes**
 1. Inicie o MySQL: `brew services start mysql` no macOS, ou o serviço "MySQL80" no Windows.
@@ -99,13 +101,14 @@ SELECT email, LEFT(senha, 7) AS inicio_do_hash FROM usuarios LIMIT 3;   -- senha
 ### 12. Considerações finais (1 min)
 - Qualidade: mostre a saída de `npm test` (testes de cálculo, tempo esgotado, finalização simultânea, permissões e migração de dados) e cite os roteiros E2E.
 - Responsividade: DevTools no modo celular ou no próprio telefone.
-- Pendências, com transparência: envio real de e-mail (RF003), upload de mídia (RF025, hoje por URL), teste de carga com 1.000 usuários (RNF002/008/010), hospedagem 24/7 (RNF004) e avisos aos usuários (caso de uso).
+- Pendências, com transparência: envio real de e-mail (RF003), upload de mídia (RF025, hoje por URL), teste de carga com 1.000 usuários (RNF002/008/010), garantia de funcionamento 24/7 (RNF004: a versão online usa planos gratuitos, sem SLA) e avisos aos usuários (caso de uso).
 
 ## Plano B
 
 | Problema | O que fazer |
 |---|---|
-| **Sem internet** | Nada muda: o ENAHub roda inteiro em `localhost` e não carrega recursos externos. Só é preciso ter feito o `npm install` antes |
+| **Sem internet** | Use a versão local: o ENAHub roda inteiro em `localhost` e não carrega recursos externos. Só é preciso ter feito o `npm install` antes |
+| **Site online fora do ar** (Aiven desligado, cota esgotada) | Religue o serviço no console da Aiven (**Power on**) ou apresente a versão local |
 | **MySQL não inicia** | `brew services restart mysql` (macOS) ou reinicie o serviço MySQL80 (Windows). Se o banco estiver corrompido, recrie com `npm run db:setup` ou restaure o backup: `mysql -u enahub_app -p enahub < backup.sql` |
 | **Porta 3000 ocupada** | `PORT=3001` no `backend/.env` e `VITE_API_PROXY=http://localhost:3001` em `frontend/.env.local`, depois reinicie |
 | **Login bloqueado por tentativas** | Reinicie o back-end (o limite fica em memória) |

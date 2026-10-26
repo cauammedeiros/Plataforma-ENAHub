@@ -11,7 +11,11 @@ require('fs').mkdirSync(SHOTS, { recursive: true });
 const BASE = process.env.E2E_URL || 'http://localhost:5173';
 const email = `e2e.${Date.now()}@unifor.br`;
 const senha = 'Teste2026e2e';
-const sql = (q) => execFileSync('mysql', ['-h', varBanco('DB_HOST') || 'localhost', '-P', varBanco('DB_PORT') || '3306', '-u', varBanco('DB_USER'), '-N', varBanco('DB_NAME'), '-e', q], { env: { ...process.env, MYSQL_PWD: varBanco('DB_PASSWORD') } }).toString().trim();
+// Banco hospedado: DB_SSL_CA_FILE ativa TLS com validação do certificado
+const tls = process.env.DB_SSL_CA_FILE ? ['--ssl-mode=VERIFY_IDENTITY', `--ssl-ca=${process.env.DB_SSL_CA_FILE}`] : [];
+const sql = (q) => execFileSync('mysql', [...tls, '-h', varBanco('DB_HOST') || 'localhost', '-P', varBanco('DB_PORT') || '3306', '-u', varBanco('DB_USER'), '-N', varBanco('DB_NAME'), '-e', q], { env: { ...process.env, MYSQL_PWD: varBanco('DB_PASSWORD') } }).toString().trim();
+// Na hospedagem as contas de demonstração têm outra senha e o cadastro exige o código de convite
+const SENHA_DEMO = process.env.E2E_SENHA_DEMO || 'Enahub@2026';
 const log = (...a) => console.log('•', ...a);
 
 // Lê a conexão do MySQL das variáveis de ambiente ou de backend/.env (usada só para conferir dados e encurtar o prazo de um simulado)
@@ -43,6 +47,7 @@ function varBanco(nome) {
   await page.getByLabel('Senha').fill(senha);
   await page.getByLabel('Curso').selectOption({ label: 'Análise e Desenvolvimento de Sistemas' });
   await page.getByLabel('Instituição').fill('Universidade de Fortaleza (UNIFOR)');
+  if (process.env.E2E_CODIGO_CONVITE) await page.getByLabel('Código de convite').fill(process.env.E2E_CODIGO_CONVITE);
   await page.locator('#aceite').check();
   await page.getByRole('button', { name: 'Cadastrar' }).click();
   await page.getByRole('heading', { name: /Olá, Estudante/ }).waitFor(); await page.waitForTimeout(500); await foto('03_inicio');
@@ -170,7 +175,7 @@ function varBanco(nome) {
 
   // 7. Admin e professor
   await page.setViewportSize({ width: 1280, height: 860 });
-  await page.getByLabel('E-mail').fill('admin@enahub.demo'); await page.getByLabel('Senha').fill('Enahub@2026');
+  await page.getByLabel('E-mail').fill('admin@enahub.demo'); await page.getByLabel('Senha').fill(SENHA_DEMO);
   await page.getByRole('button', { name: 'Entrar' }).click(); await page.getByRole('heading', { name: /Olá/ }).waitFor();
   await page.getByRole('link', { name: 'Administração' }).click(); await page.getByRole('heading', { name: 'Administração' }).waitFor();
   await page.waitForTimeout(400); await foto('20_admin_questoes');

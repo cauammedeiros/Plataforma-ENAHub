@@ -22,6 +22,9 @@ Todos os resultados abaixo vieram de testes **realmente executados**. O que não
 | Proteção do `db:migrate` em banco antigo | banco importado do `enahub.sql` + `db:migrate` sem/com `--confirmar` | ✅ sem confirmação nada é alterado; com confirmação os dados são preservados |
 | Diagnóstico `npm run verificar` | cenário real, senha errada, banco inexistente, porta ocupada | ✅ cada problema identificado com a solução |
 | Migration 003 no banco de demonstração | `npm run db:migrate` (com backup antes) | ✅ contagens iguais antes e depois (5 usuários, 32 questões, 2 simulados, 14 respostas, 2 tópicos) |
+| **Ajustes de hospedagem** (26/10, branch `deploy/vercel-aiven`) | `npm test` | ✅ **64/64** (3 novos: limite de tentativas no banco entre instâncias, código de convite, cadastro local sem convite) |
+| Migration 004 no banco de demonstração local | `npm run db:migrate` (com backup antes) | ✅ contagens iguais antes e depois |
+| **Site hospedado** (Vercel + Aiven MySQL 8.4.11) | E2E `jornada` e `gestao` com `E2E_URL=https://plataforma-enahub.vercel.app` | ✅ todas as verificações; sem erros de console nem HTTP 5xx (seção 3.1) |
 
 ## 2. Testes automatizados do back-end (`backend/tests`)
 
@@ -136,6 +139,20 @@ São executados no Google Chrome instalado (headless) com `playwright-core`, man
 - No celular, o simulado oficial com 10 questões funciona sem rolagem horizontal.
 - Nenhum erro.
 
+### 3.1 Ambiente hospedado (26/10/2026)
+
+Executado contra **https://plataforma-enahub.vercel.app** (Vercel Hobby, função em `sfo1`) com o banco **Aiven for MySQL Free 8.4.11**. Os roteiros receberam a senha das contas online e o código de convite por variáveis de ambiente (`E2E_SENHA_DEMO`, `E2E_CODIGO_CONVITE`), e o cliente `mysql` conectou com TLS validando o CA (`DB_SSL_CA_FILE`).
+
+- **`jornada`:** cadastro com código de convite; filtros (32 → 16 → 9 → 1); prática; simulado com cronômetro 00:09:59; 3 respostas salvas; **F5** mantém respostas e tempo; resultado e gabarito (5 explicações); finalização automática por tempo (`finalizado / tempo`); desempenho; favoritas; fórum; celular sem rolagem horizontal; logout invalida o token; relatórios do admin. **Nenhum erro.**
+- **`gestao`:** professor cadastra (pendente) e comenta; aluno não vê a pendente e é barrado em `/admin`; admin aprova; denúncia; tema; simulado oficial no celular. **Nenhum erro.**
+- **Nova execução da função:** simulado iniciado pela API com 2 respostas; nova implantação em produção (todas as instâncias trocadas); ao reabrir, as 2 respostas continuavam salvas e o tempo restante caiu de 1799 s para 1760 s após 39 s. Depois o simulado foi finalizado normalmente.
+- **Segurança online:** 11ª tentativa de login errada → 429; cadastro sem código ou com código errado → 400; senha pública `Enahub@2026` recusada online; recuperação de senha sem link na resposta; `enahub_api` sem permissão de DDL nem de leitura de `mysql.user`; conexão sem TLS ou sem o CA correto recusada.
+- **Rotas:** telas do React por URL direta → 200; `/api/rota-inexistente` → 404 JSON; `/api/auth/me` sem token → 401; `/assets/inexistente` → 404.
+- **Tempo de resposta** (10 chamadas cada, sessão de aluno): mediana de 122 a 234 ms (máximo de 394 ms).
+- **Conexões MySQL:** pico de 7 (`Max_used_connections`) de 76 permitidas.
+- **Logs da Vercel:** sem erros.
+- Depois dos testes, o banco `enahub_demo` voltou ao estado de demonstração a partir do backup feito antes (5 usuários, 32 questões, 2 simulados, 14 respostas, 2 tópicos, 16 temas).
+
 ## 4. Defeitos encontrados e corrigidos durante os testes
 
 | # | Defeito | Como foi encontrado | Correção |
@@ -170,7 +187,7 @@ São executados no Google Chrome instalado (headless) com `playwright-core`, man
 - **MySQL 8.0 no Windows:** a compatibilidade com o 8.0.46 foi comprovada no macOS. Ainda falta a primeira instalação real num Windows da equipe (MySQL Installer, PowerShell/CMD, `copy`, serviço `MySQL80`). O roteiro está em `docs/INSTALACAO.md`.
 - **MariaDB/XAMPP:** não suportado (collation `utf8mb4_0900_ai_ci` e a sintaxe `INSERT ... AS ... ON DUPLICATE KEY`). O `npm run verificar` detecta e avisa.
 
-- **Carga (RNF002, RNF008, RNF010):** não houve teste com 1.000 usuários simultâneos. As medições locais com um único usuário ficaram entre 3 e 10 ms por endpoint.
+- **Carga (RNF002, RNF008, RNF010):** não houve teste com 1.000 usuários simultâneos. As medições locais com um único usuário ficaram entre 3 e 10 ms por endpoint; online, entre 122 e 234 ms (mediana).
 - **Envio real de e-mail (RF003):** não há SMTP configurado. Só o link gerado foi testado.
 - **Outros navegadores:** testes apenas no Chrome. Safari e Firefox não foram testados.
 - **Leitor de tela:** os atributos de acessibilidade foram revisados no código, mas não houve teste com VoiceOver.

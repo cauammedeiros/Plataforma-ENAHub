@@ -1,6 +1,6 @@
 # ENAHub — guia rápido para a equipe
 
-Pessoal, a versão completa do ENAHub está no repositório privado **cauammedeiros/Plataforma-ENAHub**. Ela roda **localmente** no computador de cada um (não vamos hospedar por enquanto). Siga os passos abaixo; o guia detalhado com prints dos problemas comuns está em `docs/INSTALACAO.md`.
+Pessoal, a versão completa do ENAHub está no repositório privado **cauammedeiros/Plataforma-ENAHub**. Para só **usar** o sistema, não precisa instalar nada: acesse **https://plataforma-enahub.vercel.app**, clique em **Criar conta** e use o código de convite que mandei no grupo. Para rodar **localmente** (desenvolvimento ou plano B da apresentação), siga os passos abaixo; o guia detalhado com prints dos problemas comuns está em `docs/INSTALACAO.md`.
 
 ## 1. Instale (uma vez)
 - **Git**, **Node.js LTS (22.12 ou maior)** e **MySQL Community Server 8** (no Windows: MySQL Installer; anote a senha do root).

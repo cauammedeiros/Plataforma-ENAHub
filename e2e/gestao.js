@@ -15,7 +15,7 @@ const log = (...a) => console.log('•', ...a);
     page.on('pageerror', (e) => problemas.push(e.message));
     page.on('response', (r) => r.status() >= 500 && problemas.push(`HTTP ${r.status()} ${r.url()}`));
     await page.goto(BASE + '/login');
-    await page.getByLabel('E-mail').fill(email); await page.getByLabel('Senha').fill('Enahub@2026');
+    await page.getByLabel('E-mail').fill(email); await page.getByLabel('Senha').fill(process.env.E2E_SENHA_DEMO || 'Enahub@2026');
     await page.getByRole('button', { name: 'Entrar' }).click(); await page.getByRole('heading', { name: /Olá/ }).waitFor();
     return page;
   }

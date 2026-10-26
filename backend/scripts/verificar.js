@@ -14,6 +14,8 @@ const { execFileSync } = require('child_process');
 const RAIZ = path.join(__dirname, '..', '..');
 const ARQUIVO_ENV = path.join(__dirname, '..', '.env');
 const BRANCH_COMPLETA = 'feat/enahub-mvp-03nov';
+// Branch derivada da completa, com os ajustes de hospedagem (Vercel + Aiven)
+const BRANCHES_ACEITAS = [BRANCH_COMPLETA, 'deploy/vercel-aiven'];
 
 let problemas = 0;
 const ok = (msg) => console.log(`  ✔ ${msg}`);
@@ -47,7 +49,7 @@ async function main() {
     // 1. Git
     try {
         const branch = execFileSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd: RAIZ }).toString().trim();
-        if (branch === BRANCH_COMPLETA) ok(`Branch do Git: ${branch}`);
+        if (BRANCHES_ACEITAS.includes(branch)) ok(`Branch do Git: ${branch}`);
         else aviso(`Branch atual: ${branch} (a versão completa do MVP está em ${BRANCH_COMPLETA})`,
             `git switch ${BRANCH_COMPLETA}`);
     } catch {

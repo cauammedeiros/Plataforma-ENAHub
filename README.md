@@ -11,7 +11,9 @@ Equipe: Marco Cauã (back-end) · Pedro Pompeu (front-end) · João Victor (UI/U
 
 Repositório original da equipe: [MarcoMarola/ENAHub](https://github.com/MarcoMarola/ENAHub)
 
-O ENAHub reúne em uma única plataforma o banco de questões, os simulados cronometrados com correção automática, o gabarito comentado, o acompanhamento de desempenho, o fórum e as ferramentas administrativas. **Roda localmente**: não há hospedagem na internet.
+O ENAHub reúne em uma única plataforma o banco de questões, os simulados cronometrados com correção automática, o gabarito comentado, o acompanhamento de desempenho, o fórum e as ferramentas administrativas. Roda **localmente** em cada computador e também tem uma **versão online de demonstração**.
+
+> 🌐 **Online:** https://plataforma-enahub.vercel.app (cadastro com código de convite; peça ao responsável pelo projeto). Detalhes em [`docs/HOSPEDAGEM.md`](docs/HOSPEDAGEM.md). A versão online é publicada a partir da branch `deploy/vercel-aiven`.
 
 | Camada | Tecnologias |
 |---|---|
@@ -60,7 +62,7 @@ npm run dev                    # abra http://localhost:5173
 | Administrador | `admin@enahub.demo` |
 | Alunos com histórico (ranking) | `bruna@enahub.demo`, `rafael@enahub.demo` |
 
-Criadas pelo `npm run db:setup`, **apenas para uso local**. Contas novas criadas na tela de cadastro são sempre de aluno; o administrador pode promovê-las em Administração → Usuários.
+Criadas pelo `npm run db:setup`, **apenas para uso local**. Na versão online, essas contas têm outra senha, privada. Contas novas criadas na tela de cadastro são sempre de aluno; o administrador pode promovê-las em Administração → Usuários.
 
 > As 32 questões da seed são **demonstrativas**, elaboradas pela equipe, e **não são questões oficiais do ENADE/INEP**. Elas aparecem com o selo "Demonstrativa".
 
@@ -92,6 +94,7 @@ Os roteiros no navegador ficam em [`e2e/README.md`](e2e/README.md). Eles criam d
 | Documento | Conteúdo |
 |---|---|
 | [`docs/GUIA_EQUIPE.md`](docs/GUIA_EQUIPE.md) | guia rápido para a equipe instalar e testar |
+| [`docs/HOSPEDAGEM.md`](docs/HOSPEDAGEM.md) | versão online (Vercel + Aiven): acesso, segurança, limites, como publicar e como desligar |
 | [`docs/INSTALACAO.md`](docs/INSTALACAO.md) | instalação passo a passo (Windows e macOS), `.env`, MySQL e problemas comuns |
 | [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md) | como o sistema funciona e como explicá-lo ao professor |
 | [`docs/ROTEIRO_DEMONSTRACAO.md`](docs/ROTEIRO_DEMONSTRACAO.md) | apresentação de 03/11/2026 e planos B |
