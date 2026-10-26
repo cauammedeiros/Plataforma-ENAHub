@@ -7,13 +7,16 @@ import { useAuth, useToast } from '../contexts/contextos'
 import { useRequisicao } from '../hooks/useRequisicao'
 import { REGEX_EMAIL, validarSenha } from '../utils/validacao'
 
+// Na hospedagem de demonstração o cadastro exige o código de convite enviado pela equipe
+const COM_CONVITE = import.meta.env.VITE_CADASTRO_COM_CONVITE === 'true'
+
 export default function Cadastro() {
   const { cadastrar } = useAuth()
   const toast = useToast()
   const navegar = useNavigate()
   const cursos = useRequisicao('/cursos')
   const instituicoes = useRequisicao('/instituicoes')
-  const [form, setForm] = useState({ nome: '', email: '', senha: '', curso_id: '', instituicao: '', aceite_termos: false })
+  const [form, setForm] = useState({ nome: '', email: '', senha: '', curso_id: '', instituicao: '', codigo_convite: '', aceite_termos: false })
   const [erros, setErros] = useState({})
   const [mensagem, setMensagem] = useState('')
   const [enviando, setEnviando] = useState(false)
@@ -26,6 +29,7 @@ export default function Cadastro() {
     if (erroSenha) e.senha = erroSenha
     if (!form.curso_id) e.curso_id = 'Selecione seu curso.'
     if (form.instituicao.trim().length < 2) e.instituicao = 'Informe sua instituição de ensino.'
+    if (COM_CONVITE && !form.codigo_convite.trim()) e.codigo_convite = 'Informe o código de convite.'
     if (!form.aceite_termos) e.aceite_termos = 'É necessário aceitar os termos para criar a conta.'
     return e
   }
@@ -72,6 +76,10 @@ export default function Cadastro() {
         <datalist id="lista-instituicoes">
           {instituicoes.dados?.map((i) => <option key={i.id} value={i.nome} />)}
         </datalist>
+        {COM_CONVITE && (
+          <Campo rotulo="Código de convite" autoComplete="off" placeholder="Código enviado pela equipe ENAHub"
+            value={form.codigo_convite} onChange={alterar('codigo_convite')} erro={erros.codigo_convite} maxLength={100} />
+        )}
         <div className="form-check mb-3">
           <input id="aceite" type="checkbox" className={`form-check-input ${erros.aceite_termos ? 'is-invalid' : ''}`}
             checked={form.aceite_termos} onChange={(e) => setForm({ ...form, aceite_termos: e.target.checked })} />

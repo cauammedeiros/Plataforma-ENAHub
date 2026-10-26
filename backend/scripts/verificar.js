@@ -77,7 +77,8 @@ async function main() {
     let conn;
     try {
         conn = await mysql.createConnection({
-            host: config.db.host, port: config.db.port, user: config.db.user, password: config.db.password
+            host: config.db.host, port: config.db.port, user: config.db.user, password: config.db.password,
+            ssl: config.db.ssl
         });
     } catch (e) {
         const dicas = {

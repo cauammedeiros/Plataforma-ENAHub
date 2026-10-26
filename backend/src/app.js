@@ -8,6 +8,8 @@ const { rotaNaoEncontrada, tratarErros } = require('./middlewares/erros');
 const app = express();
 
 app.disable('x-powered-by');
+// Na Vercel o IP do visitante chega pelo proxy (X-Forwarded-For), usado no limite de tentativas
+if (config.serverless) app.set('trust proxy', 1);
 app.use(cors({ origin: config.frontendUrl }));
 app.use(express.json({ limit: '200kb' }));
 

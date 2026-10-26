@@ -19,3 +19,8 @@ dist-ssr/
 .vscode/
 .idea/
 .DS_Store
+# Vercel (configuração local da CLI)
+.vercel
+
+# Certificados e segredos da hospedagem
+*.pem

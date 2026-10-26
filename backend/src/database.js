@@ -7,9 +7,21 @@ const connection = mysql.createPool({
     password: config.db.password,
     database: config.db.database,
     port: config.db.port,
+    ssl: config.db.ssl,
+    timezone: config.db.timezone,
     waitForConnections: true,
-    connectionLimit: 10
+    connectionLimit: config.db.limiteConexoes,
+    // Na hospedagem as conexões ociosas são fechadas rápido para não esgotar o limite do banco
+    ...(config.serverless ? { maxIdle: 0, idleTimeout: 5000 } : {})
 });
+
+if (config.serverless) {
+    // Se a instância for congelada com uma conexão aberta, o MySQL a encerra sozinho
+    connection.pool.on('connection', (conn) => conn.query('SET SESSION wait_timeout = 120'));
+    // Mantém a função ativa até o pool fechar as conexões ociosas (Fluid compute da Vercel)
+    connection.pool.config.connectionConfig.idleTimeout = 5000;
+    require('@vercel/functions').attachDatabasePool(connection.pool);
+}
 
 /**
  * Executa `fn` dentro de uma transação. Faz commit se tudo der certo

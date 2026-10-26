@@ -18,7 +18,8 @@ const config = require('../src/config');
 
 async function recriarBancoDeTeste({ comSeed = true } = {}) {
     const conn = await mysql.createConnection({
-        host: config.db.host, port: config.db.port, user: config.db.user, password: config.db.password
+        host: config.db.host, port: config.db.port, user: config.db.user, password: config.db.password,
+        ssl: config.db.ssl
     });
     await conn.query(`DROP DATABASE IF EXISTS \`${config.db.database}\``);
     await conn.end();

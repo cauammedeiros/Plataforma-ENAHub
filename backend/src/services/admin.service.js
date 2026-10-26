@@ -1,6 +1,7 @@
 const db = require('../database');
 const AppError = require('../utils/AppError');
 const { arredondar } = require('../utils/pontuacao');
+const { finalizarExpirados } = require('./simulados.service');
 
 // RF030 — gerenciamento de usuários
 async function listarUsuarios({ busca, perfil }) {
@@ -98,6 +99,8 @@ async function analisarDenuncia(admin, id, status) {
 
 // RF033 — relatórios gerais (uso, desempenho médio e acessos)
 async function relatorios() {
+    // Sem rotina periódica na hospedagem: encerra antes os simulados com prazo vencido
+    await finalizarExpirados();
     const [[usuarios]] = await db.query(
         `SELECT COUNT(*) AS total, SUM(perfil = 'aluno') AS alunos, SUM(perfil = 'professor') AS professores,
                 SUM(perfil = 'admin') AS admins, SUM(bloqueado = 1) AS bloqueados,

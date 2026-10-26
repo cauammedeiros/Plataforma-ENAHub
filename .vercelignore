@@ -1,0 +1,16 @@
+# Nunca enviar segredos nem arquivos locais para a Vercel
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.sql.gz
+node_modules
+**/node_modules
+frontend/dist
+e2e
+backend/tests
+docs
+.DS_Store

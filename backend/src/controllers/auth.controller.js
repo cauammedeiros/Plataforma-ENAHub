@@ -1,6 +1,14 @@
+const crypto = require('crypto');
 const config = require('../config');
 const authService = require('../services/auth.service');
 const { Validador } = require('../utils/validacao');
+
+// Compara sem revelar, pelo tempo de resposta, quantos caracteres estão certos
+function codigoConviteValido(codigo) {
+    const esperado = crypto.createHash('sha256').update(config.codigoConvite).digest();
+    const recebido = crypto.createHash('sha256').update(String(codigo || '').trim()).digest();
+    return crypto.timingSafeEqual(esperado, recebido);
+}
 
 const MENSAGEM_RECUPERACAO = 'Se o e-mail estiver cadastrado, enviaremos um link para redefinir a senha.';
 
@@ -13,6 +21,10 @@ async function cadastrar(req, res) {
         cursoId: v.inteiro('curso_id', { min: 1, rotulo: 'Curso' }),
         instituicao: v.texto('instituicao', { min: 2, max: 150, rotulo: 'Instituição' })
     };
+    // Hospedagem de demonstração: só quem recebeu o código de convite cria conta
+    if (config.codigoConvite && !codigoConviteValido(req.body.codigo_convite)) {
+        v.erro('codigo_convite', 'Código de convite inválido. Peça o código à equipe ENAHub.');
+    }
     if (req.body.aceite_termos !== true) v.erro('aceite_termos', 'É necessário aceitar os termos de uso e a política de privacidade.');
     v.verificar();
 
