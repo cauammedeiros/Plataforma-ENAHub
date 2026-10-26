@@ -1,10 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "npm ci --prefix backend --omit=dev && npm ci --prefix frontend",
+  "installCommand": "npm ci --prefix backend --omit=dev && npm ci --prefix frontend --include=dev",
   "buildCommand": "npm run build --prefix frontend",
   "outputDirectory": "frontend/dist",
-  "regions": ["iad1"],
+  "regions": ["sfo1"],
   "functions": {
     "api/index.js": { "maxDuration": 30 }
   },

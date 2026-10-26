@@ -145,7 +145,9 @@ async function seed({ silencioso = false } = {}) {
     }
 
     log('✔ Seed de demonstração concluído:', contagem);
-    log(`  Usuários de teste (senha "${SENHA_DEMO}"): ${dados.usuarios.map((u) => u.email).join(', ')}`);
+    // A senha só é exibida quando é a senha pública da demonstração local
+    const senhaExibida = process.env.SEED_SENHA ? 'definida em SEED_SENHA' : `"${SENHA_DEMO}"`;
+    log(`  Usuários de teste (senha ${senhaExibida}): ${dados.usuarios.map((u) => u.email).join(', ')}`);
 }
 
 if (require.main === module) {
