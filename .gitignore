@@ -24,3 +24,5 @@ dist-ssr/
 
 # Certificados e segredos da hospedagem
 *.pem
+.env*
+!.env.example
